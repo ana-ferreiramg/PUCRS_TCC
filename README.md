@@ -125,7 +125,7 @@ Se deseja contribuir para o projeto, siga os seguintes passos:
 5. Abra um Pull Request.
 
 ## 📄 Licença
-Este projeto está sob a licença GPL-3.0. Veja o arquivo `LICENSE` para mais detalhes.
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
 ## 📞 Contato
 - Email: anapaulaferreiradev@gmail.com
