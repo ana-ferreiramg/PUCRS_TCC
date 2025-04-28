@@ -28,9 +28,4 @@ export class UsersRepository {
   remove(deleteDto: Prisma.UserDeleteArgs) {
     return this.prismaService.user.delete(deleteDto);
   }
-
-  // Contar todos os usuários
-  count(countDto: Prisma.UserCountArgs) {
-    return this.prismaService.user.count(countDto);
-  }
 }
