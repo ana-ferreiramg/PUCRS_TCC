@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import slugify from 'slugify';
 
 import { Company } from '@prisma/client';
@@ -59,16 +63,43 @@ export class CompaniesService {
     return company;
   }
 
-  findAll() {
-    return `This action returns all companies`;
+  async findAll(): Promise<Company[]> {
+    return this.companiesRepo.findAll({});
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} company`;
+  async findOne(id: string): Promise<Company> {
+    const company = await this.companiesRepo.findUnique({
+      where: { id },
+    });
+
+    if (!company) {
+      throw new NotFoundException(`Company with ID ${id} not found`);
+    }
+
+    return company;
   }
 
-  update(id: string, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
+  async update(
+    id: string,
+    updateCompanyDto: UpdateCompanyDto,
+  ): Promise<Company> {
+    if (updateCompanyDto.name) {
+      updateCompanyDto.slug = slugify(updateCompanyDto.name, {
+        lower: true,
+        strict: true,
+      });
+    }
+
+    const company = await this.companiesRepo.update({
+      where: { id },
+      data: updateCompanyDto,
+    });
+
+    if (!company) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return company;
   }
 
   remove(id: string) {
