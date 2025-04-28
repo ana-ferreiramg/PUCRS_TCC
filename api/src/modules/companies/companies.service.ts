@@ -102,7 +102,15 @@ export class CompaniesService {
     return company;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} company`;
+  async remove(id: string): Promise<Company> {
+    const company = await this.companiesRepo.remove({
+      where: { id },
+    });
+
+    if (!company) {
+      throw new NotFoundException(`Company with ID ${id} not found`);
+    }
+
+    return company;
   }
 }
