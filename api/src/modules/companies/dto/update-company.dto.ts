@@ -23,6 +23,10 @@ export class UpdateCompanyDto extends PartialType(CreateCompanyDto) {
 
   @IsOptional()
   @IsString()
+  slug?: string;
+
+  @IsOptional()
+  @IsString()
   @Matches(/^\d{2}\d{8}$/, {
     message:
       'O número de telefone deve conter apenas o DDD e o número (ex: 1199999999)',
