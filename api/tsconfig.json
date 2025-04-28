@@ -23,6 +23,9 @@
       "@shared/*": [
         "src/shared/*"
       ],
+      "@utils/*": [
+        "src/shared/utils/*"
+      ],
       "@tests/*": [
         "test/*"
       ]

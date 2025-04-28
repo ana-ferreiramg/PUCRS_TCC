@@ -3,16 +3,44 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import slugify from 'slugify';
 
 import { Company } from '@prisma/client';
 import { CompaniesRepository } from '@shared/database/repositories/companies.repositories';
+import { SlugifyService } from '@shared/utils/slugify.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 
 @Injectable()
 export class CompaniesService {
-  constructor(private readonly companiesRepo: CompaniesRepository) {}
+  constructor(
+    private readonly companiesRepo: CompaniesRepository,
+    private readonly slugifyService: SlugifyService,
+  ) {}
+
+  // Função para garantir a unicidade do slug
+  private async ensureUniqueSlug(name: string): Promise<string> {
+    let slug = this.slugifyService.generateSlug(name);
+
+    let slugTaken = await this.companiesRepo.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+
+    let counter = 1;
+    while (slugTaken) {
+      const newSlug = `${slug}-${counter}`;
+      slugTaken = await this.companiesRepo.findUnique({
+        where: { slug: newSlug },
+        select: { id: true },
+      });
+      if (!slugTaken) {
+        slug = newSlug;
+      }
+      counter++;
+    }
+
+    return slug;
+  }
 
   async create(createCompanyDto: CreateCompanyDto): Promise<Company> {
     const { name, email, phone, address } = createCompanyDto;
@@ -26,29 +54,7 @@ export class CompaniesService {
       throw new ConflictException('Este email já está sendo usado.');
     }
 
-    let slug = slugify(name, {
-      lower: true,
-      strict: true,
-    });
-
-    let slugTaken = await this.companiesRepo.findUnique({
-      where: { slug },
-      select: { id: true },
-    });
-
-    // Caso o slug já exista, adicione um número incremental para garantir unicidade
-    let counter = 1;
-    while (slugTaken) {
-      const newSlug = `${slug}-${counter}`;
-      slugTaken = await this.companiesRepo.findUnique({
-        where: { slug: newSlug },
-        select: { id: true },
-      });
-      if (!slugTaken) {
-        slug = newSlug;
-      }
-      counter++;
-    }
+    const slug = await this.ensureUniqueSlug(name);
 
     const company = await this.companiesRepo.create({
       data: {
@@ -84,10 +90,11 @@ export class CompaniesService {
     updateCompanyDto: UpdateCompanyDto,
   ): Promise<Company> {
     if (updateCompanyDto.name) {
-      updateCompanyDto.slug = slugify(updateCompanyDto.name, {
-        lower: true,
-        strict: true,
-      });
+      let slug = this.slugifyService.generateSlug(updateCompanyDto.name);
+
+      slug = await this.ensureUniqueSlug(updateCompanyDto.name);
+
+      updateCompanyDto.slug = slug;
     }
 
     const company = await this.companiesRepo.update({
