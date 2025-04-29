@@ -1,9 +1,10 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 import { UsersRepository } from '@shared/database/repositories/users.repositories';
 import { hash } from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,7 +16,7 @@ export class UsersService {
 
   // Criar um novo usuário
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const { name, email, password } = createUserDto;
+    const { name, email, password, role, companyId } = createUserDto;
 
     const emailTaken = await this.usersRepo.findUnique({
       where: { email },
@@ -26,6 +27,13 @@ export class UsersService {
       throw new ConflictException('Este email já está sendo usado.');
     }
 
+    // Apenas SUPER_ADMIN pode ser criado sem companyId
+    if (role !== UserRole.SUPER_ADMIN && !companyId) {
+      throw new BadRequestException(
+        'Usuários com papéis ADMIN ou WAITER devem estar vinculados a uma empresa.',
+      );
+    }
+
     const hashedPassword = await hash(password, 12);
 
     const user = await this.usersRepo.create({
@@ -33,6 +41,8 @@ export class UsersService {
         name,
         email,
         password: hashedPassword,
+        role,
+        companyId: companyId || null,
       },
     });
 

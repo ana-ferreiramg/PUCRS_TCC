@@ -8,11 +8,12 @@ import {
   IsUUID,
   MaxLength,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 
 export class CreateUserDto {
+  @ValidateIf((dto) => dto.role !== UserRole.SUPER_ADMIN)
   @IsOptional()
-  @IsString()
   @IsUUID()
   companyId?: string;
 
