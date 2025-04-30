@@ -3,7 +3,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-
 import { Company } from '@prisma/client';
 import { CompaniesRepository } from '@shared/database/repositories/companies.repositories';
 import { SlugifyService } from '@shared/utils/slugify.service';
@@ -42,6 +41,10 @@ export class CompaniesService {
     return slug;
   }
 
+  private formatPhoneNumber(phone: string): string {
+    return phone && !phone.startsWith('+55') ? `+55${phone}` : phone;
+  }
+
   async create(createCompanyDto: CreateCompanyDto): Promise<Company> {
     const { name, email, phone, address } = createCompanyDto;
 
@@ -61,7 +64,7 @@ export class CompaniesService {
         name,
         slug,
         email,
-        phone,
+        phone: this.formatPhoneNumber(phone),
         address,
       },
     });

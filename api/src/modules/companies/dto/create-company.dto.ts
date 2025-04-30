@@ -22,18 +22,18 @@ export class CreateCompanyDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^\d{2}\d{8}$/, {
+  @Matches(/^\d{2}\d{9}$/, {
     message:
-      'O número de telefone deve conter apenas o DDD e o número (ex: 1199999999)',
+      'O número de telefone deve conter apenas o DDD e o número (ex: 11987654321)',
   })
-  @Transform(({ value }) => (value ? `+55${value}` : value)) // Adiciona o código do país (+55) automaticamente
+  @Transform(({ value }) => value?.replace(/\s+/g, '').trim())
   phone?: string;
 
   @IsString()
   @MaxLength(255, {
     message: 'O endereço não pode ter mais de 255 caracteres.',
   })
-  @Matches(/^[A-Za-z0-9\s,.-áãçéíóúàèù]+$/, {
+  @Matches(/^[A-Za-z0-9\s,.-áãçéíóúàèù]+(?:\s\d{5}-\d{3})?$/, {
     message:
       'O endereço deve seguir o formato: "Rua XYZ, 123, Bairro ABC, Cidade DEF, Estado GH, 12345-678"',
   })
