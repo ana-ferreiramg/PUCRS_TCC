@@ -10,6 +10,9 @@ export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
   name?: string;
 
   @IsString()
+  @MaxLength(100, {
+    message: 'O nome do ícone deve ter no máximo 100 caracteres.',
+  })
   @IsOptional()
   icon?: string;
 }
