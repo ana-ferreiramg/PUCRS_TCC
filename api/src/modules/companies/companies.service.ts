@@ -73,7 +73,7 @@ export class CompaniesService {
   }
 
   async findAll(): Promise<Company[]> {
-    return this.companiesRepo.findAll({});
+    return await this.companiesRepo.findAll({});
   }
 
   async findOne(id: string): Promise<Company> {

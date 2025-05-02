@@ -51,7 +51,7 @@ export class UsersService {
 
   // Encontrar todos os usuários
   async findAll(): Promise<User[]> {
-    return this.usersRepo.findAll({});
+    return await this.usersRepo.findAll({});
   }
 
   // Encontrar um usuário por ID

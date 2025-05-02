@@ -39,7 +39,7 @@ export class CategoriesService {
   }
 
   async findAll(): Promise<Category[]> {
-    return this.categoriesRepo.findAll({});
+    return await this.categoriesRepo.findAll({});
   }
 
   async findOne(id: string): Promise<Category> {
