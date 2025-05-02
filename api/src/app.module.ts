@@ -4,6 +4,7 @@ import { ConfigModule } from '@shared/config/config.module';
 import { DatabaseModule } from '@shared/database/database.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CompaniesModule } from './modules/companies/companies.module';
+import { ProductsModule } from './modules/products/products.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { CompaniesModule } from './modules/companies/companies.module';
     UsersModule,
     CompaniesModule,
     CategoriesModule,
+    ProductsModule,
   ],
   controllers: [],
   providers: [],
