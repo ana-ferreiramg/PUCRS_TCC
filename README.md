@@ -15,7 +15,7 @@ O projeto é um sistema para gerenciamento de pedidos em restaurantes e bares, s
 - **Autenticação:** JWT
 - **Comunicação em Tempo Real:** WebSockets (Socket.io)
 - **Upload de Imagens:** Imgur
-- **Processamento de Upload:** Multer
+- **Processamento de Upload:** Multer, Sharp
 - **Requisições HTTP:** Axios (para interagir com APIs externas)
 - **Validação de Dados:** Zod
 - **Testes:** Jest
