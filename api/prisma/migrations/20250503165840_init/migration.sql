@@ -30,6 +30,8 @@ CREATE TABLE "products" (
     "description" TEXT,
     "price" DOUBLE PRECISION NOT NULL,
     "image_url" TEXT,
+    "image_id" TEXT,
+    "image_delete_hash" TEXT,
     "is_available" BOOLEAN NOT NULL DEFAULT true,
     "company_id" UUID NOT NULL,
     "category_id" UUID,
@@ -85,9 +87,6 @@ CREATE TABLE "users" (
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "companies_name_key" ON "companies"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "companies_slug_key" ON "companies"("slug");
