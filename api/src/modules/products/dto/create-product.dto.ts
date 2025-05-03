@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsNotEmpty,
@@ -39,6 +40,7 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'O preço é obrigatório.' })
   @IsNumber({}, { message: 'O preço deve ser um número.' })
   @Min(0, { message: 'O preço não pode ser negativo.' })
+  @Transform(({ value }) => parseFloat(value))
   price: number;
 
   @IsOptional()
@@ -48,6 +50,14 @@ export class CreateProductDto {
     message: 'A URL da imagem não pode ter mais de 255 caracteres.',
   })
   imageUrl?: string;
+
+  @IsOptional()
+  @IsString({ message: 'A hash da imagem deve ser uma string.' })
+  @IsUrl({}, { message: 'A hash da imagem não é válida.' })
+  @MaxLength(255, {
+    message: 'A hash da imagem não pode ter mais de 255 caracteres.',
+  })
+  imageDeleteHash?: string;
 
   @IsOptional()
   @IsBoolean({ message: 'O valor de isAvailable deve ser um booleano.' })
