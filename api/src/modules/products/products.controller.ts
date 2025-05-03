@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,8 +9,13 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Product } from '@prisma/client';
+import { multerConfig } from '@shared/config/multer.config';
+import * as path from 'path';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
@@ -19,7 +25,16 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  async create(@Body() createProductDto: CreateProductDto): Promise<Product> {
+  @UseInterceptors(FileInterceptor('imageUrl', multerConfig))
+  async create(
+    @Body() createProductDto: CreateProductDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (file?.path) {
+      const relativePath = path.relative(process.cwd(), file.path);
+      createProductDto.imageUrl = relativePath;
+    }
+
     return await this.productsService.create(createProductDto);
   }
 
@@ -34,10 +49,20 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @UseInterceptors(FileInterceptor('imageUrl', multerConfig))
   async update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<Product> {
+    if (!updateProductDto) {
+      throw new BadRequestException('Dados de atualização não foram enviados.');
+    }
+
+    if (file?.path) {
+      const relativePath = path.relative(process.cwd(), file.path);
+      updateProductDto.imageUrl = relativePath;
+    }
     return await this.productsService.update(id, updateProductDto);
   }
 
