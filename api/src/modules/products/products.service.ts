@@ -1,16 +1,70 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { Product } from '@prisma/client';
 import { ProductsRepository } from '@shared/database/repositories/products.repository';
+import { FileService } from '@shared/utils/file.service';
+import { ImageService } from '@shared/utils/image.service';
+import { ImgurService } from '@shared/utils/imgur.service';
+import { SharpService } from '@shared/utils/sharp.service';
+import * as path from 'path';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly productsRepo: ProductsRepository) {}
+  constructor(
+    private readonly productsRepo: ProductsRepository,
+    private readonly imgurService: ImgurService,
+    private readonly sharpService: SharpService,
+    private readonly fileService: FileService,
+    private readonly imageService: ImageService,
+  ) {}
+
+  // Função para processar e enviar a imagem para o Imgur
+  private async processImage(
+    imagePath?: string,
+  ): Promise<{ link: string; deleteHash: string } | undefined | undefined> {
+    if (!imagePath) return undefined;
+
+    const fullPath = path.resolve(process.cwd(), imagePath);
+
+    this.imageService.validateImageType(imagePath);
+
+    const originalBuffer = this.imageService.readImageFile(fullPath);
+
+    const optimizedBuffer = await this.sharpService.optimize(originalBuffer);
+
+    // Convertendo para base64
+    const base64 = optimizedBuffer.toString('base64');
+
+    // Enviando para o Imgur
+    const uploadedUrl = await this.imgurService.uploadImage(base64);
+
+    // Deletando o arquivo local após o upload
+    await this.fileService.deleteFileIfExists(fullPath);
+
+    return uploadedUrl;
+  }
+
+  private async parsePrice(value: string | number): Promise<number> {
+    const parsedValue = typeof value === 'number' ? value : parseFloat(value);
+
+    if (isNaN(parsedValue)) {
+      throw new BadRequestException(
+        'O preço informado não é um número válido.',
+      );
+    }
+
+    if (parsedValue < 0) {
+      throw new BadRequestException('O preço não pode ser negativo.');
+    }
+
+    return parsedValue;
+  }
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     const {
@@ -23,7 +77,9 @@ export class ProductsService {
       isAvailable,
     } = createProductDto;
 
-    // Verificando se o nome do produto já existe para a mesma empresa
+    const parsed = await this.parsePrice(price);
+
+    // Verificando se o nome do produto já existe
     const existingProduct = await this.productsRepo.findFirst({
       where: { name, companyId },
       select: { id: true },
@@ -35,14 +91,27 @@ export class ProductsService {
       );
     }
 
+    let finalImageUrl: string | undefined = undefined;
+    let deleteHash: string | undefined = undefined;
+    let imageId: string | undefined = undefined;
+
+    if (imageUrl) {
+      const upload = await this.processImage(imageUrl);
+      finalImageUrl = upload?.link;
+      deleteHash = upload?.deleteHash;
+      imageId = this.imgurService.extractImageIdFromUrl(upload?.link);
+    }
+
     const newProduct = await this.productsRepo.create({
       data: {
         companyId,
         categoryId,
         name,
         description,
-        price,
-        imageUrl,
+        price: parsed,
+        imageUrl: finalImageUrl,
+        imageDeleteHash: deleteHash,
+        imageId,
         isAvailable: isAvailable !== undefined ? isAvailable : true,
       },
     });
@@ -74,7 +143,9 @@ export class ProductsService {
       throw new NotFoundException(`Produto com ID ${id} não encontrado.`);
     }
 
-    // Se estiver tentando alterar o nome, garantir que não haja duplicidade
+    console.log('updateProductDto:', updateProductDto);
+
+    // Verifica se o nome foi alterado e garante que não haja duplicidade
     if (updateProductDto.name && updateProductDto.name !== product.name) {
       const nameTaken = await this.productsRepo.findFirst({
         where: {
@@ -91,9 +162,35 @@ export class ProductsService {
       }
     }
 
+    let finalImageUrl = product.imageUrl;
+    let imageDeleteHash = product.imageDeleteHash;
+
+    // Verifica se a imagem foi alterada
+    if (updateProductDto.imageUrl) {
+      // Deleta a imagem anterior do Imgur, se houver
+      if (product.imageId && imageDeleteHash) {
+        await this.imgurService.deleteImage(imageDeleteHash);
+      }
+
+      // Se o produto tem imagem local, deleta o arquivo local também
+      if (product.imageUrl) {
+        await this.fileService.deleteFileIfExists(product.imageUrl);
+      }
+
+      // Processa a nova imagem
+      const uploadResult = await this.processImage(updateProductDto.imageUrl);
+      finalImageUrl = uploadResult?.link;
+      imageDeleteHash = uploadResult?.deleteHash;
+    }
+
+    // Atualiza os dados no banco de dados
     return this.productsRepo.update({
       where: { id },
-      data: updateProductDto,
+      data: {
+        ...updateProductDto,
+        imageUrl: finalImageUrl,
+        imageDeleteHash,
+      },
     });
   }
 
@@ -102,6 +199,17 @@ export class ProductsService {
 
     if (!product) {
       throw new NotFoundException(`Produto com ID ${id} não encontrado.`);
+    }
+
+    if (product.imageDeleteHash) {
+      try {
+        await this.imgurService.deleteImage(product.imageDeleteHash);
+        console.log(
+          `Imagem com ID ${product.imageId} removida com sucesso do Imgur.`,
+        );
+      } catch (error) {
+        console.error('Erro ao excluir imagem do Imgur:', error.message);
+      }
     }
 
     return this.productsRepo.remove({ where: { id } });
