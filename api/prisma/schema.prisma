@@ -75,10 +75,10 @@ model Product {
   isAvailable     Boolean @default(true) @map("is_available")
 
   // Relacionamento
-  companyId String  @default(uuid()) @map("company_id") @db.Uuid
+  companyId String  @map("company_id") @db.Uuid
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  categoryId String?   @default(uuid()) @map("category_id") @db.Uuid
+  categoryId String?   @map("category_id") @db.Uuid
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   orderItems OrderItem[] // Relacionamento com os itens do pedido
@@ -98,11 +98,11 @@ model Order {
   updatedAt     DateTime       @updatedAt @map("updated_at")
 
   // Relacionamento com a empresa
-  companyId String  @default(uuid()) @map("company_id") @db.Uuid
+  companyId String  @map("company_id") @db.Uuid
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   // Relacionamento com o garçom que anotou o pedido
-  userId String @default(uuid()) @map("user_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Relacionamento com os itens do pedido
@@ -118,11 +118,11 @@ model OrderItem {
   price    Float
 
   // Relacionamento com o pedido
-  orderId String @default(uuid()) @map("order_id") @db.Uuid
+  orderId String @map("order_id") @db.Uuid
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   // Relacionamento com o produto
-  productId String  @default(uuid()) @map("product_id") @db.Uuid
+  productId String  @map("product_id") @db.Uuid
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("order_items")
@@ -134,7 +134,7 @@ model Category {
   name String
   icon String?
 
-  companyId String  @default(uuid()) @map("company_id") @db.Uuid
+  companyId String  @map("company_id") @db.Uuid
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   products Product[]
@@ -151,7 +151,7 @@ model User {
   role     UserRole @default(WAITER)
 
   // Relacionamento com a empresa
-  companyId String?  @default(uuid()) @map("company_id") @db.Uuid
+  companyId String?  @map("company_id") @db.Uuid
   company   Company? @relation(fields: [companyId], references: [id])
 
   // Relacionamento com os pedidos do usuário
