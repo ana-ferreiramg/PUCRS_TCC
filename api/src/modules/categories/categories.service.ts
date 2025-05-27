@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Category } from '@prisma/client';
-import { CategoriesRepository } from '@shared/database/repositories/categories.repository';
+import { CategoriesRepository } from '@shared/database/repositories/categories.repositories';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 

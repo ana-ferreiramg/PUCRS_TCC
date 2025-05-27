@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Product } from '@prisma/client';
-import { ProductsRepository } from '@shared/database/repositories/products.repository';
+import { ProductsRepository } from '@shared/database/repositories/products.repositories';
 import { FileService } from '@shared/utils/file.service';
 import { ImageService } from '@shared/utils/image.service';
 import { ImgurService } from '@shared/utils/imgur.service';
