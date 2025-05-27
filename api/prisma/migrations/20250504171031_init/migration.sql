@@ -42,6 +42,7 @@ CREATE TABLE "products" (
 -- CreateTable
 CREATE TABLE "orders" (
     "id" UUID NOT NULL,
+    "client" TEXT NOT NULL,
     "status" "order_status" NOT NULL DEFAULT 'PENDING',
     "payment_status" "payment_status" NOT NULL DEFAULT 'PENDING',
     "payment_method" "payment_method",
