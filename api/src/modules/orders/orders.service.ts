@@ -1,26 +1,198 @@
-import { Injectable } from '@nestjs/common';
+import { OrderItemsService } from '@modules/order-items/order-items.service';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Order } from '@prisma/client';
+import { OrdersRepository } from '@shared/database/repositories/orders.repositories';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class OrdersService {
-  create(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
+  constructor(
+    private readonly ordersRepo: OrdersRepository,
+    private readonly orderItemsService: OrderItemsService,
+  ) {}
+
+  async create(createOrderDto: CreateOrderDto): Promise<Order> {
+    const { orderItems, ...orderData } = createOrderDto;
+
+    try {
+      const order = await this.ordersRepo.create({
+        data: {
+          client: orderData.client,
+          status: orderData.status,
+          paymentStatus: orderData.paymentStatus,
+          paymentMethod: orderData.paymentMethod,
+          notes: orderData.notes,
+          totalAmount: 0,
+
+          company: {
+            connect: { id: orderData.companyId },
+          },
+          user: {
+            connect: { id: orderData.userId },
+          },
+        },
+      });
+
+      const createdOrderItems = await Promise.all(
+        orderItems.map(async (item) => {
+          return await this.orderItemsService.create(item, order.id);
+        }),
+      );
+
+      const totalAmount = createdOrderItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0,
+      );
+
+      await this.ordersRepo.update({
+        where: { id: order.id },
+        data: {
+          totalAmount,
+        },
+      });
+
+      return await this.ordersRepo.findUnique({
+        where: { id: order.id },
+        include: {
+          orderItems: {
+            include: {
+              product: {
+                select: { name: true, description: true, imageUrl: true },
+              },
+            },
+          },
+          user: { select: { name: true } },
+        },
+      });
+    } catch (error) {
+      throw new HttpException(
+        `Erro ao criar a ordem: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  findAll() {
-    return `This action returns all orders`;
+  async findAll(): Promise<Order[]> {
+    try {
+      return await this.ordersRepo.findAll({
+        include: {
+          orderItems: {
+            include: {
+              product: {
+                select: {
+                  name: true,
+                  price: true,
+                  category: { select: { name: true, icon: true } },
+                  description: true,
+                  imageUrl: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    } catch (error) {
+      throw new HttpException(
+        `Erro ao buscar todas as ordens: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findOne(id: string): Promise<Order> {
+    try {
+      const order = await this.ordersRepo.findUnique({
+        where: { id },
+        include: {
+          orderItems: {
+            include: {
+              product: true,
+            },
+          },
+          user: true,
+          company: true,
+        },
+      });
+
+      if (!order) {
+        throw new HttpException(
+          `Ordem com ID ${id} não encontrada.`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return order;
+    } catch (error) {
+      throw new HttpException(
+        `Erro ao buscar a ordem: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  async update(id: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
+    const { orderItems, ...orderData } = updateOrderDto;
+
+    try {
+      await this.ordersRepo.update({
+        where: { id },
+        data: {
+          ...orderData,
+        },
+      });
+
+      const updatedOrderItems = await Promise.all(
+        orderItems.map(async (item) => {
+          if (item.id) {
+            return await this.orderItemsService.update(item.id, item);
+          } else {
+            return await this.orderItemsService.create(item, id);
+          }
+        }),
+      );
+
+      const totalAmount = updatedOrderItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0,
+      );
+
+      return await this.ordersRepo.update({
+        where: { id },
+        data: {
+          totalAmount,
+        },
+      });
+    } catch (error) {
+      throw new HttpException(
+        `Erro ao atualizar a ordem ${id}: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async remove(id: string): Promise<Order> {
+    try {
+      const existingOrder = await this.ordersRepo.findUnique({
+        where: { id },
+      });
+
+      if (!existingOrder) {
+        throw new HttpException(
+          `Ordem com ID ${id} não encontrada.`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      await this.orderItemsService.removeManyByOrderId(id);
+
+      return await this.ordersRepo.remove({
+        where: { id },
+      });
+    } catch (error) {
+      throw new HttpException(
+        `Erro ao remover a ordem com ID ${id}: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
