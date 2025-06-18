@@ -1,3 +1,5 @@
+import { Roles } from '@modules/auth/decorators/roles.decorator';
+import { RolesGuard } from '@modules/auth/guards/roles.guard';
 import {
   Body,
   Controller,
@@ -7,23 +9,21 @@ import {
   HttpStatus,
   Param,
   Patch,
-  Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { User } from '@prisma/client';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return await this.usersService.create(createUserDto);
-  }
-
   @Get()
+  @Roles('SUPER_ADMIN', 'ADMIN')
   async findAll(): Promise<User[]> {
     return await this.usersService.findAll();
   }
@@ -37,11 +37,16 @@ export class UsersController {
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @Req() req: any,
   ): Promise<User> {
-    return await this.usersService.update(id, updateUserDto);
+    const currentUser = req.user;
+    const mappedUser = { ...currentUser, id: currentUser.userId };
+
+    return await this.usersService.update(id, updateUserDto, mappedUser);
   }
 
   @Delete(':id')
+  @Roles('SUPER_ADMIN', 'ADMIN')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string): Promise<void> {
     await this.usersService.remove(id);

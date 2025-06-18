@@ -1,3 +1,5 @@
+import { Roles } from '@modules/auth/decorators/roles.decorator';
+import { RolesGuard } from '@modules/auth/guards/roles.guard';
 import {
   BadRequestException,
   Body,
@@ -10,8 +12,10 @@ import {
   Patch,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Product } from '@prisma/client';
 import { multerConfig } from '@shared/config/multer.config';
@@ -20,11 +24,13 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
 
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @Roles('SUPER_ADMIN', 'ADMIN')
   @UseInterceptors(FileInterceptor('imageUrl', multerConfig))
   async create(
     @Body() createProductDto: CreateProductDto,
@@ -49,6 +55,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @Roles('SUPER_ADMIN', 'ADMIN')
   @UseInterceptors(FileInterceptor('imageUrl', multerConfig))
   async update(
     @Param('id') id: string,
@@ -67,6 +74,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @Roles('SUPER_ADMIN', 'ADMIN')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string): Promise<void> {
     await this.productsService.remove(id);
