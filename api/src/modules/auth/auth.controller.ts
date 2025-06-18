@@ -1,4 +1,10 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -24,6 +30,10 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Body() dto: SignupDto) {
+    const userExists = await this.usersService.findOneByEmail(dto.email);
+    if (userExists) {
+      throw new BadRequestException('Email já cadastrado');
+    }
     const user = await this.usersService.create(dto);
     return this.authService.login(user);
   }
