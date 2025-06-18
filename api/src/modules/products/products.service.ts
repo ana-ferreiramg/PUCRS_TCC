@@ -133,6 +133,20 @@ export class ProductsService {
     return product;
   }
 
+  async findPublic(): Promise<Product[]> {
+    return this.productsRepo.findAll({
+      where: { isAvailable: true },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        imageUrl: true,
+        category: true,
+        description: true,
+      },
+    });
+  }
+
   async update(
     id: string,
     updateProductDto: UpdateProductDto,

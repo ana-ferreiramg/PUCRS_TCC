@@ -6,10 +6,11 @@ import { ImgurService } from '@shared/utils/imgur.service';
 import { SharpService } from '@shared/utils/sharp.service';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
+import { PublicProductsController } from './public-products.controller';
 
 @Module({
   imports: [ConfigModule],
-  controllers: [ProductsController],
+  controllers: [ProductsController, PublicProductsController],
   providers: [
     ProductsService,
     ImgurService,
