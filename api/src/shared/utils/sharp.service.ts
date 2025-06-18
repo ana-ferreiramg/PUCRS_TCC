@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 
 @Injectable()
 export class SharpService {
