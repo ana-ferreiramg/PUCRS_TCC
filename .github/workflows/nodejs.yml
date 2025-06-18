@@ -1,0 +1,52 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - main
+      - backend
+    paths:
+      - 'api/**'
+  pull_request:
+    branches:
+      - main
+      - backend
+    paths:
+      - 'api/**'
+
+jobs:
+  build-and-test:
+    name: Build & Test API
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x' 
+
+      - name: 📦 Install dependencies with Yarn
+        run: yarn install --frozen-lockfile
+
+      - name: 🧼 Check code formatting
+        run: yarn format:check
+
+      - name: 🧠 Prisma Generate
+        run: yarn prisma generate
+
+      - name: 🔍 Lint (opcional)
+        run: yarn lint
+
+      - name: 🧪 Run tests
+        run: yarn test
+
+      - name: ✅ Build
+        run: yarn build
+
