@@ -1,4 +1,4 @@
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsRepository } from '@shared/database/repositories/products.repositories';
 import { FileService } from '@shared/utils/file.service';
@@ -85,6 +85,21 @@ describe('ProductsService', () => {
           price: 10,
         } as any),
       ).rejects.toThrow(ConflictException);
+    });
+  });
+
+  describe('findOne', () => {
+    it('should return product if found', async () => {
+      mockProductsRepo.findUnique.mockResolvedValue({ id: '1', name: 'Prod' });
+      const result = await service.findOne('1');
+      expect(result.id).toBe('1');
+    });
+
+    it('should throw NotFoundException if not found', async () => {
+      mockProductsRepo.findUnique.mockResolvedValue(null);
+      await expect(service.findOne('not-found')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });
