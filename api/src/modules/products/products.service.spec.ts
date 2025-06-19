@@ -102,4 +102,29 @@ describe('ProductsService', () => {
       );
     });
   });
+
+  describe('remove', () => {
+    it('should remove product and delete image if needed', async () => {
+      const product = {
+        id: '1',
+        imageDeleteHash: 'hash123',
+        imageId: 'img123',
+      };
+
+      mockProductsRepo.findUnique.mockResolvedValue(product);
+      mockProductsRepo.remove.mockResolvedValue(product);
+
+      const result = await service.remove('1');
+
+      expect(mockImgurService.deleteImage).toHaveBeenCalledWith('hash123');
+      expect(result.id).toBe('1');
+    });
+
+    it('should throw NotFoundException if product does not exist', async () => {
+      mockProductsRepo.findUnique.mockResolvedValue(null);
+      await expect(service.remove('not-found')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
 });
