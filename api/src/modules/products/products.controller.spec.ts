@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Product } from '@prisma/client';
 import * as path from 'path';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
@@ -57,6 +58,32 @@ describe('ProductsController', () => {
 
       expect(mockProductsService.create).toHaveBeenCalledWith(dto);
       expect(result).toHaveProperty('id', '2');
+    });
+  });
+
+  describe('findAll', () => {
+    it('should return array of products', async () => {
+      const products: Product[] = [
+        {
+          id: '1',
+          name: 'Product 1',
+          price: 100,
+          imageUrl: 'uploads/produto1.jpg',
+          imageId: 'img123',
+          imageDeleteHash: 'hash123',
+          description: 'Saboroso',
+          isAvailable: true,
+          companyId: 'company-uuid',
+          categoryId: 'category-uuid',
+        },
+      ];
+
+      mockProductsService.findAll.mockResolvedValue(products);
+
+      const result = await controller.findAll();
+
+      expect(mockProductsService.findAll).toHaveBeenCalled();
+      expect(result).toBe(products);
     });
   });
 });
