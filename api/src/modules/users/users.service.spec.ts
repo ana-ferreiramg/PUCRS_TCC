@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException } from '@nestjs/common';
-import { UserRole } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 import { UsersService } from './users.service';
 
 const mockUsersRepo = () => ({
@@ -92,6 +92,18 @@ describe('UsersService', () => {
 
       expect(user.role).toBe(UserRole.SUPER_ADMIN);
       expect(usersRepo.create).toHaveBeenCalled();
+    });
+  });
+
+  describe('findAll', () => {
+    it('should return all users', async () => {
+      const users = [{ id: '1' }, { id: '2' }] as User[];
+      usersRepo.findAll.mockResolvedValue(users);
+
+      const result = await service.findAll();
+
+      expect(usersRepo.findAll).toHaveBeenCalledWith({});
+      expect(result).toEqual(users);
     });
   });
 });
