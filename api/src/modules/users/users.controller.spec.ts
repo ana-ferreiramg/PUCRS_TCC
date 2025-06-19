@@ -71,4 +71,11 @@ describe('UsersController', () => {
       expect(result.name).toEqual('Updated Name');
     });
   });
+
+  describe('remove', () => {
+    it('should delete the user', async () => {
+      await controller.remove('1');
+      expect(mockUsersService.remove).toHaveBeenCalledWith('1');
+    });
+  });
 });
