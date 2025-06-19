@@ -137,4 +137,15 @@ describe('UsersService', () => {
       expect(result).toEqual(user);
     });
   });
+
+  describe('findOneByEmail', () => {
+    it('should return user or null', async () => {
+      const user = { id: 'uuid', email: 'ana@example.com' } as User;
+      usersRepo.findUnique.mockResolvedValue(user);
+
+      const result = await service.findOneByEmail('ana@example.com');
+
+      expect(result).toEqual(user);
+    });
+  });
 });
