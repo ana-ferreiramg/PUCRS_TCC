@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrderStatus, PaymentMethod, PaymentStatus } from '@prisma/client';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 
@@ -82,6 +83,51 @@ describe('OrdersController', () => {
       const result = await controller.findOne('123');
       expect(result).toEqual(order);
       expect(mockOrdersService.findOne).toHaveBeenCalledWith('123');
+    });
+  });
+
+  describe('update', () => {
+    it('should call service.update and return updated order', async () => {
+      const orderId = 'order-id';
+      const dto: UpdateOrderDto = {
+        status: OrderStatus.DELIVERED,
+        paymentStatus: PaymentStatus.PAID,
+        notes: 'Pedido finalizado',
+        orderItems: [
+          { id: 'item-1', productId: 'prod-1', quantity: 2, price: 10 },
+          { id: 'item-2', productId: 'prod-2', quantity: 1, price: 20 },
+        ],
+      };
+
+      const expectedUpdatedOrder = {
+        id: orderId,
+        ...dto,
+        totalAmount: 40,
+      };
+
+      mockOrdersService.update.mockResolvedValue(expectedUpdatedOrder);
+
+      const result = await controller.update(orderId, dto);
+
+      expect(result).toEqual(expectedUpdatedOrder);
+      expect(mockOrdersService.update).toHaveBeenCalledWith(orderId, dto);
+    });
+
+    it('should throw if service.update throws', async () => {
+      mockOrdersService.update.mockRejectedValue(
+        new Error('Erro ao atualizar pedido'),
+      );
+
+      const dto: UpdateOrderDto = {
+        status: OrderStatus.CANCELED,
+        paymentStatus: PaymentStatus.PAID,
+        notes: 'Erro forçado',
+        orderItems: [],
+      };
+
+      await expect(controller.update('some-id', dto)).rejects.toThrow(
+        'Erro ao atualizar pedido',
+      );
     });
   });
 });
