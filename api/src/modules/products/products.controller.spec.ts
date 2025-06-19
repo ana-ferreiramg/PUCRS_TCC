@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Product } from '@prisma/client';
 import * as path from 'path';
@@ -108,6 +109,47 @@ describe('ProductsController', () => {
 
       expect(mockProductsService.findOne).toHaveBeenCalledWith('1');
       expect(result).toBe(product);
+    });
+  });
+
+  describe('update', () => {
+    it('should throw BadRequestException if updateProductDto is missing', async () => {
+      await expect(controller.update('1', null, null)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should update product and set imageUrl relative path if file provided', async () => {
+      const dto = { name: 'Updated Product' } as any;
+      const file = {
+        path: '/full/path/to/updated-image.jpg',
+      } as Express.Multer.File;
+      const relativePath = path.relative(process.cwd(), file.path);
+
+      const updatedProduct = { id: '1', ...dto, imageUrl: relativePath };
+
+      mockProductsService.update.mockResolvedValue(updatedProduct);
+
+      const result = await controller.update('1', dto, file);
+
+      expect(mockProductsService.update).toHaveBeenCalledWith('1', {
+        ...dto,
+        imageUrl: relativePath,
+      });
+      expect(result).toBe(updatedProduct);
+    });
+
+    it('should update product without changing imageUrl if no file provided', async () => {
+      const dto = { name: 'Updated Product' } as any;
+
+      const updatedProduct = { id: '1', ...dto, imageUrl: 'some/path.jpg' };
+
+      mockProductsService.update.mockResolvedValue(updatedProduct);
+
+      const result = await controller.update('1', dto, null);
+
+      expect(mockProductsService.update).toHaveBeenCalledWith('1', dto);
+      expect(result).toBe(updatedProduct);
     });
   });
 });
