@@ -1,3 +1,4 @@
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserRole } from '@prisma/client';
 import { UsersService } from '../users/users.service'; // Ajuste o caminho conforme seu projeto
@@ -11,6 +12,7 @@ describe('AuthController', () => {
   const mockAuthService = {
     login: jest.fn(),
     signup: jest.fn(),
+    validateUser: jest.fn(),
   };
 
   const mockUsersService = {
@@ -19,6 +21,8 @@ describe('AuthController', () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
@@ -71,6 +75,43 @@ describe('AuthController', () => {
       // no controller, o erro é lançado na verificação, sem chamar create
       await expect(controller.signup(dto)).rejects.toThrow(
         'Email já cadastrado',
+      );
+    });
+  });
+
+  describe('login', () => {
+    it('should call authService.validateUser and authService.login', async () => {
+      const loginDto = {
+        email: 'ana@example.com',
+        password: '123456',
+      };
+
+      const mockUser = { id: 'user-id', email: loginDto.email };
+      mockAuthService.validateUser = jest.fn().mockResolvedValue(mockUser);
+      mockAuthService.login = jest
+        .fn()
+        .mockResolvedValue({ accessToken: 'token-login' });
+
+      const result = await controller.login(loginDto);
+
+      expect(mockAuthService.validateUser).toHaveBeenCalledWith(
+        loginDto.email,
+        loginDto.password,
+      );
+      expect(mockAuthService.login).toHaveBeenCalledWith(mockUser);
+      expect(result).toEqual({ accessToken: 'token-login' });
+    });
+
+    it('should throw UnauthorizedException if credentials are invalid', async () => {
+      const loginDto = {
+        email: 'ana@example.com',
+        password: 'wrong-password',
+      };
+
+      mockAuthService.validateUser = jest.fn().mockResolvedValue(null); // simula usuário inválido
+
+      await expect(controller.login(loginDto)).rejects.toThrow(
+        UnauthorizedException,
       );
     });
   });
