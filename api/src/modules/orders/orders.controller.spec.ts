@@ -63,4 +63,25 @@ describe('OrdersController', () => {
       expect(mockOrdersService.create).toHaveBeenCalledWith(dto);
     });
   });
+
+  describe('findAll', () => {
+    it('should return all orders', async () => {
+      const orders = [{ id: '1' }, { id: '2' }];
+      mockOrdersService.findAll.mockResolvedValue(orders);
+
+      const result = await controller.findAll();
+      expect(result).toEqual(orders);
+    });
+  });
+
+  describe('findOne', () => {
+    it('should return a single order by id', async () => {
+      const order = { id: '123', tableNumber: 1 };
+      mockOrdersService.findOne.mockResolvedValue(order);
+
+      const result = await controller.findOne('123');
+      expect(result).toEqual(order);
+      expect(mockOrdersService.findOne).toHaveBeenCalledWith('123');
+    });
+  });
 });
