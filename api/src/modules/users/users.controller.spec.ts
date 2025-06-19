@@ -39,15 +39,19 @@ describe('UsersController', () => {
     controller = module.get<UsersController>(UsersController);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-
   describe('findAll', () => {
     it('should return an array of users', async () => {
       const result = await controller.findAll();
       expect(result).toEqual([mockUser]);
       expect(mockUsersService.findAll).toHaveBeenCalled();
+    });
+  });
+
+  describe('findOne', () => {
+    it('should return a user by ID', async () => {
+      const result = await controller.findOne('1');
+      expect(result).toEqual(mockUser);
+      expect(mockUsersService.findOne).toHaveBeenCalledWith('1');
     });
   });
 });
