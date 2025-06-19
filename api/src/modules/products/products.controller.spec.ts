@@ -86,4 +86,28 @@ describe('ProductsController', () => {
       expect(result).toBe(products);
     });
   });
+
+  describe('findOne', () => {
+    it('should return a single product by id', async () => {
+      const product: Product = {
+        id: '1',
+        name: 'Product 1',
+        price: 100,
+        imageUrl: 'uploads/produto1.jpg',
+        imageId: 'img123',
+        imageDeleteHash: 'hash123',
+        description: 'Saboroso',
+        isAvailable: true,
+        companyId: 'company-uuid',
+        categoryId: 'category-uuid',
+      };
+
+      mockProductsService.findOne.mockResolvedValue(product);
+
+      const result = await controller.findOne('1');
+
+      expect(mockProductsService.findOne).toHaveBeenCalledWith('1');
+      expect(result).toBe(product);
+    });
+  });
 });
