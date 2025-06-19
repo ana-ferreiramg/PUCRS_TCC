@@ -1,4 +1,8 @@
-import { BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { User, UserRole } from '@prisma/client';
 import { UsersService } from './users.service';
 
@@ -104,6 +108,33 @@ describe('UsersService', () => {
 
       expect(usersRepo.findAll).toHaveBeenCalledWith({});
       expect(result).toEqual(users);
+    });
+  });
+
+  describe('findOne', () => {
+    it('should throw BadRequestException for invalid UUID', async () => {
+      await expect(service.findOne('invalid-id')).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should throw NotFoundException if user not found', async () => {
+      usersRepo.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.findOne('3f1f4a57-1b63-4a5f-98cd-8c258dc1e53f'),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should return user if found', async () => {
+      const user = { id: 'uuid', email: 'ana@example.com' } as User;
+      usersRepo.findUnique.mockResolvedValue(user);
+
+      const result = await service.findOne(
+        '3f1f4a57-1b63-4a5f-98cd-8c258dc1e53f',
+      );
+
+      expect(result).toEqual(user);
     });
   });
 });
