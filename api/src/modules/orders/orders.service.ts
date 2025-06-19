@@ -157,10 +157,33 @@ export class OrdersService {
         0,
       );
 
-      return await this.ordersRepo.update({
+      await this.ordersRepo.update({
         where: { id },
         data: {
           totalAmount,
+        },
+      });
+
+      // Retorna a ordem completa com relacionamentos
+      return await this.ordersRepo.findUnique({
+        where: { id },
+        include: {
+          orderItems: {
+            include: {
+              product: {
+                select: {
+                  name: true,
+                  description: true,
+                  imageUrl: true,
+                },
+              },
+            },
+          },
+          user: {
+            select: {
+              name: true,
+            },
+          },
         },
       });
     } catch (error) {
