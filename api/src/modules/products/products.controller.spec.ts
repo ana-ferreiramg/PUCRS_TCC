@@ -152,4 +152,14 @@ describe('ProductsController', () => {
       expect(result).toBe(updatedProduct);
     });
   });
+
+  describe('remove', () => {
+    it('should call remove on the service', async () => {
+      mockProductsService.remove.mockResolvedValue(undefined);
+
+      await controller.remove('1');
+
+      expect(mockProductsService.remove).toHaveBeenCalledWith('1');
+    });
+  });
 });
