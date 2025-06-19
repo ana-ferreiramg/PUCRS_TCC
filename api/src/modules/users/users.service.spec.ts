@@ -1,9 +1,11 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
 import { User, UserRole } from '@prisma/client';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 const mockUsersRepo = () => ({
@@ -146,6 +148,94 @@ describe('UsersService', () => {
       const result = await service.findOneByEmail('ana@example.com');
 
       expect(result).toEqual(user);
+    });
+  });
+
+  describe('update', () => {
+    const existingUser = {
+      id: 'uuid',
+      email: 'old@example.com',
+      role: UserRole.WAITER,
+    } as User;
+
+    it('should throw NotFoundException if user not found', async () => {
+      usersRepo.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.update(
+          'uuid',
+          { name: 'new name' },
+          { id: 'uuid2', email: 'x', role: UserRole.ADMIN },
+        ),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw ForbiddenException if non-admin updates others', async () => {
+      usersRepo.findUnique.mockResolvedValue(existingUser);
+
+      await expect(
+        service.update(
+          'uuid',
+          { name: 'new name' },
+          { id: 'different-user', email: 'x', role: UserRole.WAITER },
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should throw ForbiddenException if non-admin tries to update restricted fields', async () => {
+      usersRepo.findUnique.mockResolvedValue(existingUser);
+
+      await expect(
+        service.update(
+          'uuid',
+          { name: 'new name', email: 'new@example.com' },
+          { id: 'uuid', email: 'old@example.com', role: UserRole.WAITER },
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should hash password if provided', async () => {
+      usersRepo.findUnique.mockResolvedValue(existingUser);
+      usersRepo.update.mockImplementation(async ({ data }) => ({
+        ...existingUser,
+        ...data,
+        password: data.password,
+      }));
+
+      const dto = { password: 'newpass' };
+      const dtoCopy = { ...dto };
+
+      const currentUser = {
+        id: 'uuid',
+        email: 'old@example.com',
+        role: UserRole.ADMIN,
+      };
+
+      const updatedUser = await service.update('uuid', dto, currentUser);
+
+      expect(updatedUser.password).not.toBe(dtoCopy.password);
+    });
+
+    it('should hash password if provided', async () => {
+      usersRepo.findUnique.mockResolvedValue(existingUser);
+      usersRepo.update.mockImplementation(async ({ data }) => ({
+        ...existingUser,
+        ...data,
+        password: 'hashed-password-mock',
+      }));
+
+      const dto: Partial<UpdateUserDto> = { password: 'newpass' };
+      const currentUser = {
+        id: 'uuid',
+        email: 'old@example.com',
+        role: UserRole.ADMIN,
+      };
+
+      const plainPassword = dto.password;
+
+      const updatedUser = await service.update('uuid', dto, currentUser);
+
+      expect(updatedUser.password).not.toBe(plainPassword);
     });
   });
 });
