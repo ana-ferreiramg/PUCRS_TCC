@@ -130,4 +130,13 @@ describe('OrdersController', () => {
       );
     });
   });
+
+  describe('remove', () => {
+    it('should remove an order', async () => {
+      mockOrdersService.remove.mockResolvedValue(undefined);
+
+      await expect(controller.remove('123')).resolves.toBeUndefined();
+      expect(mockOrdersService.remove).toHaveBeenCalledWith('123');
+    });
+  });
 });
