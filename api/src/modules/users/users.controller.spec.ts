@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { User, UserRole } from '@prisma/client';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -52,6 +53,22 @@ describe('UsersController', () => {
       const result = await controller.findOne('1');
       expect(result).toEqual(mockUser);
       expect(mockUsersService.findOne).toHaveBeenCalledWith('1');
+    });
+  });
+
+  describe('update', () => {
+    it('should update the user if requester is self or admin', async () => {
+      const dto: UpdateUserDto = { name: 'Updated Name' };
+      const req = { user: { userId: '1', role: UserRole.ADMIN } };
+
+      const result = await controller.update('1', dto, req);
+      expect(mockUsersService.update).toHaveBeenCalledWith('1', dto, {
+        id: '1',
+        role: UserRole.ADMIN,
+        userId: '1',
+        email: undefined,
+      });
+      expect(result.name).toEqual('Updated Name');
     });
   });
 });
