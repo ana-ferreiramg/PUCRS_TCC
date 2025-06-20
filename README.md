@@ -2,7 +2,6 @@
 # PUCRS - Pós Graduação em Desenvolvimento Full Stack - Projeto de conclusão de curso
 
 # TCC - Sistema de Pedidos para Restaurantes e Bares
-![Tela de login](./docs/images/tela-login-web.png)
 
 📚 Documentação completa → [Veja aqui](./docs/index.md)
 
