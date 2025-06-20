@@ -10,12 +10,14 @@ import {
 import { OrdersRepository } from '@shared/database/repositories/orders.repositories';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrdersGateway } from './orders.gateway';
 import { OrdersService } from './orders.service';
 
 describe('OrdersService', () => {
   let service: OrdersService;
   let ordersRepo: Partial<Record<keyof OrdersRepository, jest.Mock>>;
   let orderItemsService: Partial<Record<keyof OrderItemsService, jest.Mock>>;
+  let ordersGateway: Partial<Record<keyof OrdersGateway, jest.Mock>>;
 
   beforeEach(async () => {
     ordersRepo = {
@@ -32,11 +34,18 @@ describe('OrdersService', () => {
       removeManyByOrderId: jest.fn(),
     };
 
+    ordersGateway = {
+      emitOrderCreated: jest.fn(),
+      emitOrderUpdated: jest.fn(),
+      emitOrderDeleted: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         OrdersService,
         { provide: OrdersRepository, useValue: ordersRepo },
         { provide: OrderItemsService, useValue: orderItemsService },
+        { provide: OrdersGateway, useValue: ordersGateway },
       ],
     }).compile();
 
