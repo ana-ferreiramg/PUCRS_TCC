@@ -2,6 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import {
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsPositive,
   IsUUID,
@@ -28,7 +29,7 @@ export class UpdateOrderItemDto extends PartialType(CreateOrderItemDto) {
   @Min(1)
   quantity: number;
 
-  @IsInt()
+  @IsNumber()
   @IsPositive()
   @IsOptional()
   @Min(0)
