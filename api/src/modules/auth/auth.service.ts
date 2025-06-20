@@ -27,7 +27,7 @@ export class AuthService {
     const isPasswordValid = await compare(plainPassword, user.password);
     if (!isPasswordValid) return null;
 
-    const { password, ...safeUser } = user;
+    const { password: _password, ...safeUser } = user;
     return safeUser;
   }
 

@@ -7,9 +7,7 @@ import { ProductsService } from './products.service';
 
 describe('ProductsController', () => {
   let controller: ProductsController;
-  let service: ProductsService;
-
-  const mockProductsService = {
+  const service: Partial<Record<keyof ProductsService, jest.Mock>> = {
     create: jest.fn(),
     findAll: jest.fn(),
     findOne: jest.fn(),
@@ -20,11 +18,10 @@ describe('ProductsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ProductsController],
-      providers: [{ provide: ProductsService, useValue: mockProductsService }],
+      providers: [{ provide: ProductsService, useValue: service }],
     }).compile();
 
     controller = module.get<ProductsController>(ProductsController);
-    service = module.get<ProductsService>(ProductsService);
 
     jest.clearAllMocks();
   });
@@ -35,7 +32,7 @@ describe('ProductsController', () => {
       const file = { path: '/full/path/to/image.jpg' } as Express.Multer.File;
       const relativePath = path.relative(process.cwd(), file.path);
 
-      mockProductsService.create.mockResolvedValue({
+      service.create.mockResolvedValue({
         id: '1',
         ...dto,
         imageUrl: relativePath,
@@ -43,7 +40,7 @@ describe('ProductsController', () => {
 
       const result = await controller.create(dto, file);
 
-      expect(mockProductsService.create).toHaveBeenCalledWith({
+      expect(service.create).toHaveBeenCalledWith({
         ...dto,
         imageUrl: relativePath,
       });
@@ -53,11 +50,11 @@ describe('ProductsController', () => {
     it('should create product without imageUrl if no file provided', async () => {
       const dto = { name: 'Product 2', price: 200 } as any;
 
-      mockProductsService.create.mockResolvedValue({ id: '2', ...dto });
+      service.create.mockResolvedValue({ id: '2', ...dto });
 
       const result = await controller.create(dto, null);
 
-      expect(mockProductsService.create).toHaveBeenCalledWith(dto);
+      expect(service.create).toHaveBeenCalledWith(dto);
       expect(result).toHaveProperty('id', '2');
     });
   });
@@ -79,11 +76,11 @@ describe('ProductsController', () => {
         },
       ];
 
-      mockProductsService.findAll.mockResolvedValue(products);
+      service.findAll.mockResolvedValue(products);
 
       const result = await controller.findAll();
 
-      expect(mockProductsService.findAll).toHaveBeenCalled();
+      expect(service.findAll).toHaveBeenCalled();
       expect(result).toBe(products);
     });
   });
@@ -103,11 +100,11 @@ describe('ProductsController', () => {
         categoryId: 'category-uuid',
       };
 
-      mockProductsService.findOne.mockResolvedValue(product);
+      service.findOne.mockResolvedValue(product);
 
       const result = await controller.findOne('1');
 
-      expect(mockProductsService.findOne).toHaveBeenCalledWith('1');
+      expect(service.findOne).toHaveBeenCalledWith('1');
       expect(result).toBe(product);
     });
   });
@@ -128,11 +125,11 @@ describe('ProductsController', () => {
 
       const updatedProduct = { id: '1', ...dto, imageUrl: relativePath };
 
-      mockProductsService.update.mockResolvedValue(updatedProduct);
+      service.update.mockResolvedValue(updatedProduct);
 
       const result = await controller.update('1', dto, file);
 
-      expect(mockProductsService.update).toHaveBeenCalledWith('1', {
+      expect(service.update).toHaveBeenCalledWith('1', {
         ...dto,
         imageUrl: relativePath,
       });
@@ -144,22 +141,22 @@ describe('ProductsController', () => {
 
       const updatedProduct = { id: '1', ...dto, imageUrl: 'some/path.jpg' };
 
-      mockProductsService.update.mockResolvedValue(updatedProduct);
+      service.update.mockResolvedValue(updatedProduct);
 
       const result = await controller.update('1', dto, null);
 
-      expect(mockProductsService.update).toHaveBeenCalledWith('1', dto);
+      expect(service.update).toHaveBeenCalledWith('1', dto);
       expect(result).toBe(updatedProduct);
     });
   });
 
   describe('remove', () => {
     it('should call remove on the service', async () => {
-      mockProductsService.remove.mockResolvedValue(undefined);
+      service.remove.mockResolvedValue(undefined);
 
       await controller.remove('1');
 
-      expect(mockProductsService.remove).toHaveBeenCalledWith('1');
+      expect(service.remove).toHaveBeenCalledWith('1');
     });
   });
 });

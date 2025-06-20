@@ -7,9 +7,7 @@ import { OrdersService } from './orders.service';
 
 describe('OrdersController', () => {
   let controller: OrdersController;
-  let ordersService: OrdersService;
-
-  const mockOrdersService = {
+  const ordersService: Partial<Record<keyof OrdersService, jest.Mock>> = {
     create: jest.fn(),
     findAll: jest.fn(),
     findOne: jest.fn(),
@@ -20,11 +18,10 @@ describe('OrdersController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [OrdersController],
-      providers: [{ provide: OrdersService, useValue: mockOrdersService }],
+      providers: [{ provide: OrdersService, useValue: ordersService }],
     }).compile();
 
     controller = module.get<OrdersController>(OrdersController);
-    ordersService = module.get<OrdersService>(OrdersService);
   });
 
   it('should be defined', () => {
@@ -56,19 +53,19 @@ describe('OrdersController', () => {
         createdAt: new Date(),
       };
 
-      mockOrdersService.create.mockResolvedValue(expectedResponse);
+      ordersService.create.mockResolvedValue(expectedResponse);
 
       const result = await controller.create(dto);
 
       expect(result).toEqual(expectedResponse);
-      expect(mockOrdersService.create).toHaveBeenCalledWith(dto);
+      expect(ordersService.create).toHaveBeenCalledWith(dto);
     });
   });
 
   describe('findAll', () => {
     it('should return all orders', async () => {
       const orders = [{ id: '1' }, { id: '2' }];
-      mockOrdersService.findAll.mockResolvedValue(orders);
+      ordersService.findAll.mockResolvedValue(orders);
 
       const result = await controller.findAll();
       expect(result).toEqual(orders);
@@ -78,11 +75,11 @@ describe('OrdersController', () => {
   describe('findOne', () => {
     it('should return a single order by id', async () => {
       const order = { id: '123', tableNumber: 1 };
-      mockOrdersService.findOne.mockResolvedValue(order);
+      ordersService.findOne.mockResolvedValue(order);
 
       const result = await controller.findOne('123');
       expect(result).toEqual(order);
-      expect(mockOrdersService.findOne).toHaveBeenCalledWith('123');
+      expect(ordersService.findOne).toHaveBeenCalledWith('123');
     });
   });
 
@@ -105,16 +102,16 @@ describe('OrdersController', () => {
         totalAmount: 40,
       };
 
-      mockOrdersService.update.mockResolvedValue(expectedUpdatedOrder);
+      ordersService.update.mockResolvedValue(expectedUpdatedOrder);
 
       const result = await controller.update(orderId, dto);
 
       expect(result).toEqual(expectedUpdatedOrder);
-      expect(mockOrdersService.update).toHaveBeenCalledWith(orderId, dto);
+      expect(ordersService.update).toHaveBeenCalledWith(orderId, dto);
     });
 
     it('should throw if service.update throws', async () => {
-      mockOrdersService.update.mockRejectedValue(
+      ordersService.update.mockRejectedValue(
         new Error('Erro ao atualizar pedido'),
       );
 
@@ -133,10 +130,10 @@ describe('OrdersController', () => {
 
   describe('remove', () => {
     it('should remove an order', async () => {
-      mockOrdersService.remove.mockResolvedValue(undefined);
+      ordersService.remove.mockResolvedValue(undefined);
 
       await expect(controller.remove('123')).resolves.toBeUndefined();
-      expect(mockOrdersService.remove).toHaveBeenCalledWith('123');
+      expect(ordersService.remove).toHaveBeenCalledWith('123');
     });
   });
 });
