@@ -9,13 +9,35 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": "./src",
+    "paths": {
+      "@modules/*": [
+        "modules/*"
+      ],
+      "@services/*": [
+        "services/*"
+      ],
+      "@controllers/*": [
+        "controllers/*"
+      ],
+      "@shared/*": [
+        "shared/*"
+      ],
+      "@utils/*": [
+        "shared/utils/*"
+      ],
+      "@tests/*": [
+        "test/*"
+      ]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   }
 }

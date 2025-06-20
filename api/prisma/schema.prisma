@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// 📌 Enum para status do pedido
+enum OrderStatus {
+  PENDING // Aguardando preparação
+  IN_PROGRESS // Sendo preparado
+  READY // Pronto para retirada ou entrega
+  CANCELED // Pedido cancelado
+  DELIVERED // Pedido entregue ao cliente
+
+  @@map("order_status")
+}
+
+/// ✅ Enum para status do pagamento
+enum PaymentStatus {
+  PENDING // Pagamento pendente
+  PAID // Pedido pago
+
+  @@map("payment_status")
+}
+
+/// 📌 Enum para o método de pagamento
+enum PaymentMethod {
+  CASH // Pagamento em dinheiro
+  PIX // Pagamento por Pix
+  CARD // Pagamento por cartão
+
+  @@map("payment_method")
+}
+
+/// 📌 Enum para os papéis do usuário
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  WAITER
+
+  @@map("user_role")
+}
+
+/// 🏢 Empresa que utiliza a plataforma
+model Company {
+  id       String  @id @default(uuid()) @db.Uuid
+  name     String
+  slug     String  @unique
+  email    String  @unique
+  phone    String?
+  address  String?
+  isActive Boolean @default(true) @map("is_active")
+
+  // Relacionamentos
+  products Product[] // Relacionamento com os produtos
+  orders   Order[] // Relacionamento com os pedidos
+  users    User[] // Relacionamento com os usuários
+  category Category[]
+
+  @@map("companies")
+}
+
+/// 📦 Produtos cadastrados pela empresa
+model Product {
+  id              String  @id @default(uuid()) @db.Uuid
+  name            String
+  description     String?
+  price           Float
+  imageUrl        String? @map("image_url") // URL da imagem salva no Imgur
+  imageId         String? @map("image_id") // id da imagem salva no Imgur
+  imageDeleteHash String? @map("image_delete_hash") // hash para permitir o delete da image no imgur
+  isAvailable     Boolean @default(true) @map("is_available")
+
+  // Relacionamento
+  companyId String  @map("company_id") @db.Uuid
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  categoryId String?   @map("category_id") @db.Uuid
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  orderItems OrderItem[] // Relacionamento com os itens do pedido
+
+  @@map("products")
+}
+
+/// 📑 Pedido realizado pelo garçom
+model Order {
+  id            String         @id @default(uuid()) @db.Uuid
+  client        String
+  status        OrderStatus    @default(PENDING)
+  paymentStatus PaymentStatus  @default(PENDING) @map("payment_status") // Apenas o status do pagamento
+  paymentMethod PaymentMethod? @map("payment_method") // Método de pagamento (opcional)
+  totalAmount   Float          @map("total_amount")
+  notes         String?
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  // Relacionamento com a empresa
+  companyId String  @map("company_id") @db.Uuid
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // Relacionamento com o garçom que anotou o pedido
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relacionamento com os itens do pedido
+  orderItems OrderItem[]
+
+  @@map("orders")
+}
+
+/// 📦 Itens do pedido
+model OrderItem {
+  id       String @id @default(uuid()) @db.Uuid
+  quantity Int
+  price    Float
+
+  // Relacionamento com o pedido
+  orderId String @map("order_id") @db.Uuid
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // Relacionamento com o produto
+  productId String  @map("product_id") @db.Uuid
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+/// 📦 Categorias cadastradas pela empresa
+model Category {
+  id   String  @id @default(uuid()) @db.Uuid
+  name String
+  icon String?
+
+  companyId String  @map("company_id") @db.Uuid
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  products Product[]
+
+  @@map("categories")
+}
+
+/// 💻 Modelo de Usuário (Admin, Garçom e SuperAdmin)
+model User {
+  id       String   @id @default(uuid()) @db.Uuid
+  name     String
+  email    String   @unique
+  password String
+  role     UserRole @default(WAITER)
+
+  // Relacionamento com a empresa
+  companyId String?  @map("company_id") @db.Uuid
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  // Relacionamento com os pedidos do usuário
+  orders Order[]
+
+  @@map("users")
+}
