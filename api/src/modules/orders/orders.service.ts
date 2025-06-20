@@ -4,12 +4,14 @@ import { Order } from '@prisma/client';
 import { OrdersRepository } from '@shared/database/repositories/orders.repositories';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrdersGateway } from './orders.gateway';
 
 @Injectable()
 export class OrdersService {
   constructor(
     private readonly ordersRepo: OrdersRepository,
     private readonly orderItemsService: OrderItemsService,
+    private readonly ordersGateway: OrdersGateway,
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
@@ -52,7 +54,7 @@ export class OrdersService {
         },
       });
 
-      return await this.ordersRepo.findUnique({
+      const finalOrder = await this.ordersRepo.findUnique({
         where: { id: order.id },
         include: {
           orderItems: {
@@ -65,6 +67,10 @@ export class OrdersService {
           user: { select: { name: true } },
         },
       });
+
+      this.ordersGateway.emitOrderCreated(finalOrder);
+
+      return finalOrder;
     } catch (error) {
       throw new HttpException(
         `Erro ao criar a ordem: ${error.message}`,
@@ -165,7 +171,7 @@ export class OrdersService {
       });
 
       // Retorna a ordem completa com relacionamentos
-      return await this.ordersRepo.findUnique({
+      const updatedOrder = await this.ordersRepo.findUnique({
         where: { id },
         include: {
           orderItems: {
@@ -186,6 +192,10 @@ export class OrdersService {
           },
         },
       });
+
+      this.ordersGateway.emitOrderUpdated(updatedOrder);
+
+      return updatedOrder;
     } catch (error) {
       throw new HttpException(
         `Erro ao atualizar a ordem ${id}: ${error.message}`,
@@ -208,9 +218,13 @@ export class OrdersService {
       }
       await this.orderItemsService.removeManyByOrderId(id);
 
-      return await this.ordersRepo.remove({
+      await this.ordersRepo.remove({
         where: { id },
       });
+
+      this.ordersGateway.emitOrderDeleted(id);
+
+      return existingOrder;
     } catch (error) {
       throw new HttpException(
         `Erro ao remover a ordem com ID ${id}: ${error.message}`,
