@@ -1,0 +1,519 @@
+{
+	"info": {
+		"_postman_id": "bc619bf4-a4c0-43a9-a2d2-325d729dda0f",
+		"name": "PUCRS_TCC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "40172076"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "create user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NDU1N2I1NC05OGYxLTQ4ODItYjhhNi04Mzg0OGRmZDVmZTMiLCJlbWFpbCI6ImFuYS5wYXVsYUFETUlOQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1MDQ0NzA1MiwiZXhwIjoxNzUwNTMzNDUyfQ.O2j2hoGnirK_UWKDOQJEhEy_VlY9smz-uewEwddgNCM"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"name\": \"Ana Paula\",\r\n        \"email\": \"ana.paulaasd123@gmail.com\",\r\n        \"password\": \"qweasd123\",\r\n        \"role\": \"WAITER\",\r\n        \"companyId\": \"b0b025da-2872-4df5-9707-019ad86c651d\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/users"
+					},
+					"response": []
+				},
+				{
+					"name": "update user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0NTRhYTgwNi02MWQ2LTQxZjktOGE2ZC1lOGIwYTVjNTE0OTAiLCJlbWFpbCI6ImFuYS5wYXVsYWRldkBnbWFpbC5jb20iLCJyb2xlIjoiV0FJVEVSIiwiaWF0IjoxNzUwMTYyODY3LCJleHAiOjE3NTAyNDkyNjd9.fY_yb1jE3s_Jhs01ChSh2s_MlKzgaEWsttZX6fnquvE"
+							}
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"asdqwe1237\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/users/454aa806-61d6-41f9-8a6d-e8b0a5c51490"
+					},
+					"response": []
+				},
+				{
+					"name": "list all users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NDU1N2I1NC05OGYxLTQ4ODItYjhhNi04Mzg0OGRmZDVmZTMiLCJlbWFpbCI6ImFuYS5wYXVsYUFETUlOQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1MDQ0NzA1MiwiZXhwIjoxNzUwNTMzNDUyfQ.O2j2hoGnirK_UWKDOQJEhEy_VlY9smz-uewEwddgNCM"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/users"
+					},
+					"response": []
+				},
+				{
+					"name": "list user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGM5MTM1MC0zNzExLTRkNGUtYTI3ZS04NWJhYzFmZjJlMDIiLCJlbWFpbCI6ImFuYS5wYXVsYUBnbWFpbC5jb20iLCJyb2xlIjoiV0FJVEVSIiwiaWF0IjoxNzUwMTYxMjA5LCJleHAiOjE3NTAyNDc2MDl9.nS9OPoBTOT3IOu1DXe4iqCwYXVJeZMa-z-XWeY7FxEM"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/users/a82fe4f2-9d0c-4dfd-bc13-a2b4b54b74f7"
+					},
+					"response": []
+				},
+				{
+					"name": "delete user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0NTRhYTgwNi02MWQ2LTQxZjktOGE2ZC1lOGIwYTVjNTE0OTAiLCJlbWFpbCI6ImFuYS5wYXVsYWRldkBnbWFpbC5jb20iLCJyb2xlIjoiV0FJVEVSIiwiaWF0IjoxNzUwMTYyODY3LCJleHAiOjE3NTAyNDkyNjd9.fY_yb1jE3s_Jhs01ChSh2s_MlKzgaEWsttZX6fnquvE"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseURL}}/users/dfeef8f4-45e4-4720-b72c-90ac71f6d53b"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "companies",
+			"item": [
+				{
+					"name": "create company",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Sport Bar\",\r\n    \"email\": \"sportbar@gmail.com\",\r\n    \"phone\": \"34988776655\",\r\n    \"address\": \"Rua XYZ, 123, Bairro ABC, Cidade DEF, Estado GH, 12345-678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/companies"
+					},
+					"response": []
+				},
+				{
+					"name": "update company",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Sport Bar Z\",\r\n    \"phone\": \"34988776644\",\r\n    \"address\": \"Rua XYZ, 123, Bairro ABC, Cidade DEF, Estado GH, 12345-678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/companies/57a0c4ff-de98-43b1-83b7-8c7c629b4806"
+					},
+					"response": []
+				},
+				{
+					"name": "list all companies",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/companies"
+					},
+					"response": []
+				},
+				{
+					"name": "list company",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/companies/74e6d380-e753-4541-b628-e902d296c8b9"
+					},
+					"response": []
+				},
+				{
+					"name": "delete company",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseURL}}/companies/0302cd14-4633-4f7b-8e79-e30e2f040530"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "categories",
+			"item": [
+				{
+					"name": "create category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Lanches\",\r\n    \"icon\": \"🍬\",\r\n    \"companyId\": \"b0b025da-2872-4df5-9707-019ad86c651d\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/categories"
+					},
+					"response": []
+				},
+				{
+					"name": "update category",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Sinuca\",\r\n    \"icon\": \"🎱\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/categories/16859907-8667-41a6-bd72-a6460ee10e50"
+					},
+					"response": []
+				},
+				{
+					"name": "list all categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/categories"
+					},
+					"response": []
+				},
+				{
+					"name": "list category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/categories/16859907-8667-41a6-bd72-a6460ee10e50"
+					},
+					"response": []
+				},
+				{
+					"name": "delete company",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseURL}}/categories/16859907-8667-41a6-bd72-a6460ee10e50"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "products",
+			"item": [
+				{
+					"name": "create product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0NTRhYTgwNi02MWQ2LTQxZjktOGE2ZC1lOGIwYTVjNTE0OTAiLCJlbWFpbCI6ImFuYS5wYXVsYWRldkBnbWFpbC5jb20iLCJyb2xlIjoiV0FJVEVSIiwiaWF0IjoxNzUwMTYyODY3LCJleHAiOjE3NTAyNDkyNjd9.fY_yb1jE3s_Jhs01ChSh2s_MlKzg6EWsttZX6fnquvE"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Suco Lata",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Bem gelado!",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "6.5",
+									"type": "text"
+								},
+								{
+									"key": "categoryId",
+									"value": "9881948b-42df-4e17-a97a-abcb6d333934",
+									"type": "text"
+								},
+								{
+									"key": "companyId",
+									"value": "b0b025da-2872-4df5-9707-019ad86c651d",
+									"type": "text"
+								},
+								{
+									"key": "imageUrl",
+									"type": "file",
+									"src": "/C:/Users/PARTICULAR/Pictures/img2.webp"
+								}
+							]
+						},
+						"url": "{{baseURL}}/products"
+					},
+					"response": []
+				},
+				{
+					"name": "update product",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "imageUrl",
+									"type": "file",
+									"src": "/C:/Users/PARTICULAR/Pictures/wallhaven-p82rr9.png"
+								}
+							]
+						},
+						"url": "{{baseURL}}/products/100b7a2d-ef66-4e6b-ac0d-979735e12239"
+					},
+					"response": []
+				},
+				{
+					"name": "list all products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/products"
+					},
+					"response": []
+				},
+				{
+					"name": "list all products (public)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/public/products"
+					},
+					"response": []
+				},
+				{
+					"name": "list product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/products/0b84238b-b167-48d1-b77f-cae58e4b1633"
+					},
+					"response": []
+				},
+				{
+					"name": "delete product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseURL}}/products/100b7a2d-ef66-4e6b-ac0d-979735e12239"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "order",
+			"item": [
+				{
+					"name": "create order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwOGVmYzg4OS0wYTIzLTRhN2UtOWFmMy1iODhmZWIzZmI4OGMiLCJlbWFpbCI6ImFuYS5wYXVsYXdhaXRlckBnbWFpbC5jb20iLCJyb2xlIjoiV0FJVEVSIiwiaWF0IjoxNzUwNDMxNjI3LCJleHAiOjE3NTA1MTgwMjd9.aynzgZYk6OaNJM4jttYCGUS752Zy1deLzumMVfBv3gE"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"client\": \"EU\",\r\n  \"notes\": \"Sem queijo na batata/calabresa\",\r\n  \"companyId\": \"b0b025da-2872-4df5-9707-019ad86c651d\",\r\n  \"userId\": \"60c91350-3711-4d4e-a27e-85bac1ff2e02\",\r\n  \"orderItems\": [\r\n    {\r\n      \"productId\": \"6c1fea4a-41dc-4d16-ae6d-bd73d06ccfd0\",\r\n      \"quantity\": 1\r\n    },\r\n        {\r\n      \"productId\": \"1fe0ffbf-5f4a-4b26-94cc-a208758f68ac\",\r\n      \"quantity\": 2\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/orders"
+					},
+					"response": []
+				},
+				{
+					"name": "update order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwOGVmYzg4OS0wYTIzLTRhN2UtOWFmMy1iODhmZWIzZmI4OGMiLCJlbWFpbCI6ImFuYS5wYXVsYXdhaXRlckBnbWFpbC5jb20iLCJyb2xlIjoiV0FJVEVSIiwiaWF0IjoxNzUwNDMxNjI3LCJleHAiOjE3NTA1MTgwMjd9.aynzgZYk6OaNJM4jttYCGUS752Zy1deLzumMVfBv3gE"
+							}
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"client\": \"EU\",\r\n    \"status\": \"PENDING\",\r\n    \"paymentStatus\": \"PENDING\",\r\n    \"paymentMethod\": null,\r\n    \"totalAmount\": 65.5,\r\n    \"notes\": \"Sem queijo na batata/calabresa\",\r\n    \"createdAt\": \"2025-06-20T15:19:42.120Z\",\r\n    \"updatedAt\": \"2025-06-20T15:19:42.148Z\",\r\n    \"companyId\": \"b0b025da-2872-4df5-9707-019ad86c651d\",\r\n    \"userId\": \"60c91350-3711-4d4e-a27e-85bac1ff2e02\",\r\n    \"orderItems\": [\r\n        {\r\n            \"id\": \"1e9faec6-db9d-4223-b3a5-aacf6a0fd4b5\",\r\n            \"quantity\": 3,\r\n            \"productId\": \"1fe0ffbf-5f4a-4b26-94cc-a208758f68ac\"\r\n        },\r\n        {\r\n            \"id\": \"dbdbf99e-dbc9-4c84-a99f-6c92c68752bf\",\r\n            \"quantity\": 2,\r\n            \"productId\": \"6c1fea4a-41dc-4d16-ae6d-bd73d06ccfd0\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/orders/97c817ec-5072-4323-b0f0-de652601515c"
+					},
+					"response": []
+				},
+				{
+					"name": "list order",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/orders/6a026284-d458-4706-8fe7-9442e7ecd931"
+					},
+					"response": []
+				},
+				{
+					"name": "list all orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/orders"
+					},
+					"response": []
+				},
+				{
+					"name": "delete order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwOGVmYzg4OS0wYTIzLTRhN2UtOWFmMy1iODhmZWIzZmI4OGMiLCJlbWFpbCI6ImFuYS5wYXVsYXdhaXRlckBnbWFpbC5jb20iLCJyb2xlIjoiV0FJVEVSIiwiaWF0IjoxNzUwNDMxNjI3LCJleHAiOjE3NTA1MTgwMjd9.aynzgZYk6OaNJM4jttYCGUS752Zy1deLzumMVfBv3gE"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseURL}}/orders/a5de39c5-9fb4-430e-9220-f99d322311a1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "create user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NDU1N2I1NC05OGYxLTQ4ODItYjhhNi04Mzg0OGRmZDVmZTMiLCJlbWFpbCI6ImFuYS5wYXVsYUFETUlOQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1MDQzMTU5OCwiZXhwIjoxNzUwNTE3OTk4fQ.Tqi8CbGF4vNaFPq0-bHuBshhqFs3GcHDTGrdMPzJtuE"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Ana Ferreira\",\r\n    \"email\": \"ana.paulawaiter@gmail.com\",\r\n    \"password\": \"asdqwe123\",\r\n    \"role\": \"WAITER\",\r\n    \"companyId\": \"b0b025da-2872-4df5-9707-019ad86c651d\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/auth/signup"
+					},
+					"response": []
+				},
+				{
+					"name": "login user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0NTRhYTgwNi02MWQ2LTQxZjktOGE2ZC1lOGIwYTVjNTE0OTAiLCJlbWFpbCI6ImFuYS5wYXVsYWRldkBnbWFpbC5jb20iLCJyb2xlIjoiV0FJVEVSIiwiaWF0IjoxNzUwMTYyODY3LCJleHAiOjE3NTAyNDkyNjd9.fY_yb1jE3s_Jhs01ChSh2s_MlKzgaEWsttZX6fnquvE"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"ana.paulaADMIN@gmail.com\",\r\n    \"password\": \"Harry123!@#\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/auth/login"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": {}
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
