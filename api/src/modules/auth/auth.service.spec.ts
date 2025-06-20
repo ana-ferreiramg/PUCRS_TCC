@@ -70,4 +70,24 @@ describe('AuthService', () => {
       });
     });
   });
+
+  describe('login', () => {
+    it('should return a JWT access token', async () => {
+      (jwtService.sign as jest.Mock).mockReturnValue('fake-jwt-token');
+
+      const result = await service.login({
+        id: 'user-id',
+        email: 'ana@example.com',
+        role: 'WAITER',
+      });
+
+      expect(jwtService.sign).toHaveBeenCalledWith({
+        sub: 'user-id',
+        email: 'ana@example.com',
+        role: 'WAITER',
+      });
+
+      expect(result).toEqual({ access_token: 'fake-jwt-token' });
+    });
+  });
 });
