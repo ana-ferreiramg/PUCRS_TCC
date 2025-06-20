@@ -21,5 +21,13 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        varsIgnorePattern: '^_',    // ignora variáveis que começam com _
+        argsIgnorePattern: '^_',    // ignora parâmetros que começam com _
+        caughtErrorsIgnorePattern: '^_', // ignora erros capturados que começam com _
+      },
+    ],
   },
 };
