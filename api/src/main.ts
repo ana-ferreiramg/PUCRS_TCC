@@ -9,7 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const configService = app.get(ConfigService);
-  const port = configService.port;
+  const port = process.env.PORT || configService.port || 3000;
 
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 Server is running on http://localhost:${port}`);
