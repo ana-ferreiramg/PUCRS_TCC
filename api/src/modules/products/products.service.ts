@@ -6,28 +6,29 @@ import {
 } from '@nestjs/common';
 import { Product } from '@prisma/client';
 import { ProductsRepository } from '@shared/database/repositories/products.repositories';
+import { CloudinaryService } from '@shared/utils/cloudinary.service';
 import { FileService } from '@shared/utils/file.service';
 import { ImageService } from '@shared/utils/image.service';
-import { ImgurService } from '@shared/utils/imgur.service';
 import { SharpService } from '@shared/utils/sharp.service';
+import { unlink, writeFile } from 'fs/promises';
+import * as os from 'os';
 import * as path from 'path';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-
 @Injectable()
 export class ProductsService {
   constructor(
     private readonly productsRepo: ProductsRepository,
-    private readonly imgurService: ImgurService,
     private readonly sharpService: SharpService,
     private readonly fileService: FileService,
     private readonly imageService: ImageService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   // Função para processar e enviar a imagem para o Imgur
   private async processImage(
     imagePath?: string,
-  ): Promise<{ link: string; deleteHash: string } | undefined | undefined> {
+  ): Promise<{ url: string; public_id: string } | undefined> {
     if (!imagePath) return undefined;
 
     const fullPath = path.resolve(process.cwd(), imagePath);
@@ -38,16 +39,20 @@ export class ProductsService {
 
     const optimizedBuffer = await this.sharpService.optimize(originalBuffer);
 
-    // Convertendo para base64
-    const base64 = optimizedBuffer.toString('base64');
+    const tempFilePath = path.join(os.tmpdir(), `optimized-${Date.now()}.jpg`);
 
-    // Enviando para o Imgur
-    const uploadedUrl = await this.imgurService.uploadImage(base64);
+    await writeFile(tempFilePath, optimizedBuffer);
 
-    // Deletando o arquivo local após o upload
+    // Upload usando caminho do arquivo temporário
+    const uploaded = await this.cloudinaryService.uploadImage(tempFilePath);
+
+    // Apaga arquivo temporário
+    await unlink(tempFilePath);
+
+    // Deleta arquivo original local
     await this.fileService.deleteFileIfExists(fullPath);
 
-    return uploadedUrl;
+    return uploaded;
   }
 
   private async parsePrice(value: string | number): Promise<number> {
@@ -97,9 +102,9 @@ export class ProductsService {
 
     if (imageUrl) {
       const upload = await this.processImage(imageUrl);
-      finalImageUrl = upload?.link;
-      deleteHash = upload?.deleteHash;
-      imageId = this.imgurService.extractImageIdFromUrl(upload?.link);
+      finalImageUrl = upload?.url;
+      deleteHash = upload?.public_id;
+      imageId = upload?.public_id;
     }
 
     const newProduct = await this.productsRepo.create({
@@ -183,7 +188,7 @@ export class ProductsService {
     if (updateProductDto.imageUrl) {
       // Deleta a imagem anterior do Imgur, se houver
       if (product.imageId && imageDeleteHash) {
-        await this.imgurService.deleteImage(imageDeleteHash);
+        await this.cloudinaryService.deleteImage(imageDeleteHash);
       }
 
       // Se o produto tem imagem local, deleta o arquivo local também
@@ -193,8 +198,8 @@ export class ProductsService {
 
       // Processa a nova imagem
       const uploadResult = await this.processImage(updateProductDto.imageUrl);
-      finalImageUrl = uploadResult?.link;
-      imageDeleteHash = uploadResult?.deleteHash;
+      finalImageUrl = uploadResult?.url;
+      imageDeleteHash = uploadResult?.public_id;
     }
 
     // Atualiza os dados no banco de dados
@@ -217,7 +222,7 @@ export class ProductsService {
 
     if (product.imageDeleteHash) {
       try {
-        await this.imgurService.deleteImage(product.imageDeleteHash);
+        await this.cloudinaryService.deleteImage(product.imageDeleteHash);
         console.log(
           `Imagem com ID ${product.imageId} removida com sucesso do Imgur.`,
         );
