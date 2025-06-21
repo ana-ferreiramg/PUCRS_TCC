@@ -111,9 +111,9 @@ describe('ProductsController', () => {
 
   describe('update', () => {
     it('should throw BadRequestException if updateProductDto is missing', async () => {
-      await expect(controller.update('1', null, null)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        controller.update('1', undefined, undefined),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should update product and set imageUrl relative path if file provided', async () => {

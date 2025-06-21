@@ -62,7 +62,10 @@ export class ProductsController {
     @Body() updateProductDto: UpdateProductDto,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<Product> {
-    if (!file && Object.keys(updateProductDto).length === 0) {
+    if (
+      !updateProductDto ||
+      (Object.keys(updateProductDto).length === 0 && !file)
+    ) {
       throw new BadRequestException('Nenhum dado de atualização foi enviado.');
     }
 
