@@ -19,7 +19,7 @@ describe('ProductsService', () => {
     remove: jest.fn(),
   };
 
-  const mockImgurService = {
+  const mockCloudinaryService = {
     uploadImage: jest.fn(),
     deleteImage: jest.fn(),
     extractImageIdFromUrl: jest.fn(),
@@ -43,7 +43,7 @@ describe('ProductsService', () => {
       providers: [
         ProductsService,
         { provide: ProductsRepository, useValue: mockProductsRepo },
-        { provide: CloudinaryService, useValue: mockImgurService },
+        { provide: CloudinaryService, useValue: mockCloudinaryService },
         { provide: SharpService, useValue: mockSharpService },
         { provide: FileService, useValue: mockFileService },
         { provide: ImageService, useValue: mockImageService },
@@ -116,7 +116,7 @@ describe('ProductsService', () => {
 
       const result = await service.remove('1');
 
-      expect(mockImgurService.deleteImage).toHaveBeenCalledWith('hash123');
+      expect(mockCloudinaryService.deleteImage).toHaveBeenCalledWith('hash123');
       expect(result.id).toBe('1');
     });
 
@@ -125,6 +125,66 @@ describe('ProductsService', () => {
       await expect(service.remove('not-found')).rejects.toThrow(
         NotFoundException,
       );
+    });
+  });
+
+  describe('update', () => {
+    it('should update product and process image correctly', async () => {
+      const productId = 'some-id';
+      const updateDto = {
+        name: 'Updated Product',
+        imageUrl: 'path/to/new-image.jpg',
+      } as any;
+
+      const existingProduct = {
+        id: productId,
+        name: 'Old Product',
+        companyId: 'company-id',
+        imageUrl: 'old/url.jpg',
+        imageDeleteHash: 'old-delete-hash',
+        imageId: 'old-image-id',
+      };
+
+      jest
+        .spyOn(mockProductsRepo, 'findUnique')
+        .mockResolvedValue(existingProduct);
+      jest.spyOn(mockProductsRepo, 'findFirst').mockResolvedValue(null);
+
+      // Cast do service para any para acessar método private
+      const serviceAny = service as any;
+      jest.spyOn(serviceAny, 'processImage').mockResolvedValue({
+        url: 'new/url.jpg',
+        public_id: 'new-public-id',
+      });
+
+      jest
+        .spyOn(mockCloudinaryService, 'deleteImage')
+        .mockResolvedValue(undefined);
+      jest
+        .spyOn(mockFileService, 'deleteFileIfExists')
+        .mockResolvedValue(undefined);
+
+      const updatedProduct = {
+        ...existingProduct,
+        ...updateDto,
+        imageUrl: 'new/url.jpg',
+        imageDeleteHash: 'new-public-id',
+        imageId: 'new-public-id',
+      };
+      jest.spyOn(mockProductsRepo, 'update').mockResolvedValue(updatedProduct);
+
+      const result = await service.update(productId, updateDto);
+
+      expect(serviceAny.processImage).toHaveBeenCalledWith(updateDto.imageUrl);
+      expect(mockCloudinaryService.deleteImage).toHaveBeenCalledWith(
+        existingProduct.imageDeleteHash,
+      );
+      expect(mockFileService.deleteFileIfExists).toHaveBeenCalledWith(
+        existingProduct.imageUrl,
+      );
+      expect(result.imageUrl).toBe('new/url.jpg');
+      expect(result.imageDeleteHash).toBe('new-public-id');
+      expect(result.imageId).toBe('new-public-id');
     });
   });
 });
