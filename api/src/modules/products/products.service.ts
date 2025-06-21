@@ -183,6 +183,7 @@ export class ProductsService {
 
     let finalImageUrl = product.imageUrl;
     let imageDeleteHash = product.imageDeleteHash;
+    let imageId = product.imageId;
 
     // Verifica se a imagem foi alterada
     if (updateProductDto.imageUrl) {
@@ -200,6 +201,7 @@ export class ProductsService {
       const uploadResult = await this.processImage(updateProductDto.imageUrl);
       finalImageUrl = uploadResult?.url;
       imageDeleteHash = uploadResult?.public_id;
+      imageId = uploadResult?.public_id;
     }
 
     // Atualiza os dados no banco de dados
@@ -209,6 +211,7 @@ export class ProductsService {
         ...updateProductDto,
         imageUrl: finalImageUrl,
         imageDeleteHash,
+        imageId,
       },
     });
   }
