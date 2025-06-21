@@ -1,9 +1,9 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsRepository } from '@shared/database/repositories/products.repositories';
+import { CloudinaryService } from '@shared/utils/cloudinary.service';
 import { FileService } from '@shared/utils/file.service';
 import { ImageService } from '@shared/utils/image.service';
-import { ImgurService } from '@shared/utils/imgur.service';
 import { SharpService } from '@shared/utils/sharp.service';
 import { ProductsService } from './products.service';
 
@@ -43,7 +43,7 @@ describe('ProductsService', () => {
       providers: [
         ProductsService,
         { provide: ProductsRepository, useValue: mockProductsRepo },
-        { provide: ImgurService, useValue: mockImgurService },
+        { provide: CloudinaryService, useValue: mockImgurService },
         { provide: SharpService, useValue: mockSharpService },
         { provide: FileService, useValue: mockFileService },
         { provide: ImageService, useValue: mockImageService },

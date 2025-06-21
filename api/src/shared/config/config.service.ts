@@ -15,9 +15,11 @@ const envSchema = z.object({
     .min(16, 'JWT secret must be at least 16 characters long'),
   JWT_EXPIRATION: z.coerce.number().min(1).default(86400), // 86400 segundos = 1 dia
   WS_ORIGIN: z.string().url().default('ws://localhost:3001'),
-  IMGUR_CLIENT_ID: z.string(),
-  IMGUR_CLIENT_SECRET: z.string(),
-  IMGUR_API_URL: z.string().url(),
+  CLOUDINARY_CLOUD_NAME: z.string(),
+  CLOUDINARY_UPLOAD_PRESET: z.string(),
+  CLOUDINARY_API_URL: z.string().url(),
+  CLOUDINARY_API_KEY: z.string(),
+  CLOUDINARY_API_SECRET: z.string(),
 });
 
 type EnvConfig = z.infer<typeof envSchema>;
@@ -36,9 +38,13 @@ export class ConfigService {
       JWT_SECRET: nestConfig.get<string>('JWT_SECRET'),
       JWT_EXPIRATION: nestConfig.get<string | number>('JWT_EXPIRATION'),
       WS_ORIGIN: nestConfig.get<string>('WS_ORIGIN'),
-      IMGUR_CLIENT_ID: nestConfig.get<string>('IMGUR_CLIENT_ID'),
-      IMGUR_CLIENT_SECRET: nestConfig.get<string>('IMGUR_CLIENT_SECRET'),
-      IMGUR_API_URL: nestConfig.get<string>('IMGUR_API_URL'),
+      CLOUDINARY_API_URL: nestConfig.get<string>('CLOUDINARY_API_URL'),
+      CLOUDINARY_UPLOAD_PRESET: nestConfig.get<string>(
+        'CLOUDINARY_UPLOAD_PRESET',
+      ),
+      CLOUDINARY_CLOUD_NAME: nestConfig.get<string>('CLOUDINARY_CLOUD_NAME'),
+      CLOUDINARY_API_KEY: nestConfig.get<string>('CLOUDINARY_API_KEY'),
+      CLOUDINARY_API_SECRET: nestConfig.get<string>('CLOUDINARY_API_SECRET'),
     };
 
     // Valida com Zod
@@ -78,16 +84,23 @@ export class ConfigService {
     return this.config.WS_ORIGIN;
   }
 
-  // IMGUR
-  get imgurClientId(): string {
-    return this.config.IMGUR_CLIENT_ID;
+  get cloudinaryCloudName(): string {
+    return this.config.CLOUDINARY_CLOUD_NAME;
   }
 
-  get imgurClientSecret(): string {
-    return this.config.IMGUR_CLIENT_SECRET;
+  get cloudinaryUploadPreset(): string {
+    return this.config.CLOUDINARY_UPLOAD_PRESET;
   }
 
-  get imgurApiUrl(): string {
-    return this.config.IMGUR_API_URL;
+  get cloudinaryApiUrl(): string {
+    return this.config.CLOUDINARY_API_URL;
+  }
+
+  get cloudinaryApiSecret(): string {
+    return this.config.CLOUDINARY_API_KEY;
+  }
+
+  get cloudinaryApiKey(): string {
+    return this.config.CLOUDINARY_API_SECRET;
   }
 }
