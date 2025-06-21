@@ -22,7 +22,11 @@ export class SharpService {
     try {
       const image = sharp(inputBuffer);
       image.resize({ width: maxWidth });
-      const optimizedBuffer = await image[format]({ quality }).toBuffer();
+      const optimizedBuffer = await image
+        .resize({ width: maxWidth })
+        [format]({ quality })
+        .toBuffer();
+
       return optimizedBuffer;
     } catch (error) {
       this.logger.error('Erro ao otimizar imagem com Sharp', error);
