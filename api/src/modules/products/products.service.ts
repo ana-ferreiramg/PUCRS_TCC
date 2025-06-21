@@ -223,9 +223,6 @@ export class ProductsService {
     if (product.imageDeleteHash) {
       try {
         await this.cloudinaryService.deleteImage(product.imageDeleteHash);
-        console.log(
-          `Imagem com ID ${product.imageId} removida com sucesso do Imgur.`,
-        );
       } catch (error) {
         console.error('Erro ao excluir imagem do Imgur:', error.message);
       }
