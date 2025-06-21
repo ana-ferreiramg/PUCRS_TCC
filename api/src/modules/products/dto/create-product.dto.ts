@@ -5,7 +5,6 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  IsUrl,
   IsUUID,
   MaxLength,
   Min,
@@ -44,16 +43,14 @@ export class CreateProductDto {
   price: number;
 
   @IsOptional()
-  @IsString({ message: 'A URL da imagem deve ser uma string.' })
-  @IsUrl({}, { message: 'A URL da imagem não é válida.' })
+  @IsString({ message: 'A imagem deve ser uma string.' })
   @MaxLength(255, {
-    message: 'A URL da imagem não pode ter mais de 255 caracteres.',
+    message: 'A imagem não pode ter mais de 255 caracteres.',
   })
   imageUrl?: string;
 
   @IsOptional()
   @IsString({ message: 'A hash da imagem deve ser uma string.' })
-  @IsUrl({}, { message: 'A hash da imagem não é válida.' })
   @MaxLength(255, {
     message: 'A hash da imagem não pode ter mais de 255 caracteres.',
   })
