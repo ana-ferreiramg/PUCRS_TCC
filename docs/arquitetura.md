@@ -3,7 +3,7 @@
 
 - [🧠 Decisões Técnicas](#-decisões-técnicas)
   - [🔄 ORM: Prisma](#-orm-prisma)
-  - [🗃️ Armazenamento de Imagens: Imgur](#️-armazenamento-de-imagens-imgur)
+  - [🗃️ Armazenamento de Imagens: Cloudinary](#️-armazenamento-de-imagens-cloudinary)
   - [💾 Banco de Dados: PostgreSQL](#-banco-de-dados-postgresql)
   - [🧱 Estrutura Modular no NestJS](#-estrutura-modular-no-nestjs)
   - [🔐 Validação com Zod](#-validação-com-zod)
@@ -30,13 +30,17 @@
 
 ----------
 
-## 🗃️ Armazenamento de Imagens: Imgur
+## 🗃️ Armazenamento de Imagens: Cloudinary
 
-**✅ Escolhido: Imgur**
--   Escalabilidade sem complexidade: sem necessidade de CDN ou servidor de arquivos    
--   URL pública imediata, sem precisar de um endpoint específico    
--   Evita complicações em ambientes como **Fly.io**, que não mantêm arquivos persistentes    
--   Imgur fornece `deleteHash` para exclusão segura   
+**✅ Escolhido: Cloudinary**
+- Solução completa de gerenciamento e otimização de imagens na nuvem
+- CDN global integrada para entrega rápida e eficiente
+- URLs públicas diretas para uso imediato sem necessidade de servidor intermediário
+- Armazenamento persistente mesmo em ambientes efêmeros
+- Identificador para exclusão: public_id
+    - Cada imagem enviada recebe um public_id único, que deve ser armazenado no banco de dados
+    - O public_id é usado para excluir a imagem via API do Cloudinary com segurança
+- API oficial e SDKs facilitam upload, transformação e exclusão 
 
 ----------
 
