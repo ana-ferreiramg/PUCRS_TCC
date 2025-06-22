@@ -97,10 +97,10 @@ export class ConfigService {
   }
 
   get cloudinaryApiSecret(): string {
-    return this.config.CLOUDINARY_API_KEY;
+    return this.config.CLOUDINARY_API_SECRET;
   }
 
   get cloudinaryApiKey(): string {
-    return this.config.CLOUDINARY_API_SECRET;
+    return this.config.CLOUDINARY_API_KEY;
   }
 }

@@ -230,7 +230,7 @@ export class ProductsService {
       try {
         await this.cloudinaryService.deleteImage(product.imageDeleteHash);
       } catch (error) {
-        console.error('Erro ao excluir imagem do Imgur:', error.message);
+        console.error('Erro ao excluir imagem do Cloudinary:', error.message);
       }
     }
 
