@@ -162,8 +162,6 @@ export class ProductsService {
       throw new NotFoundException(`Produto com ID ${id} não encontrado.`);
     }
 
-    console.log('updateProductDto:', updateProductDto);
-
     // Verifica se o nome foi alterado e garante que não haja duplicidade
     if (updateProductDto.name && updateProductDto.name !== product.name) {
       const nameTaken = await this.productsRepo.findFirst({
@@ -187,23 +185,26 @@ export class ProductsService {
 
     // Verifica se a imagem foi alterada
     if (updateProductDto.imageUrl) {
-      // Deleta a imagem anterior do Imgur, se houver
       const oldImageDeleteHash = product.imageDeleteHash;
+      const oldImageId = product.imageId;
+      const oldImageUrl = product.imageUrl;
 
-      if (product.imageId && oldImageDeleteHash) {
-        await this.cloudinaryService.deleteImage(oldImageDeleteHash);
-      }
-
-      // Se o produto tem imagem local, deleta o arquivo local também
-      if (product.imageUrl) {
-        await this.fileService.deleteFileIfExists(product.imageUrl);
-      }
-
-      // Processa a nova imagem
       const uploadResult = await this.processImage(updateProductDto.imageUrl);
       finalImageUrl = uploadResult?.url;
       imageDeleteHash = uploadResult?.public_id;
       imageId = uploadResult?.public_id;
+
+      try {
+        if (oldImageId && oldImageDeleteHash) {
+          await this.cloudinaryService.deleteImage(oldImageDeleteHash);
+        }
+
+        if (oldImageUrl) {
+          await this.fileService.deleteFileIfExists(oldImageUrl);
+        }
+      } catch (error) {
+        console.error('Erro ao deletar imagem antiga:', error.message);
+      }
     }
 
     // Atualiza os dados no banco de dados
