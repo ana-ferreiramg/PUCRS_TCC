@@ -188,8 +188,10 @@ export class ProductsService {
     // Verifica se a imagem foi alterada
     if (updateProductDto.imageUrl) {
       // Deleta a imagem anterior do Imgur, se houver
-      if (product.imageId && imageDeleteHash) {
-        await this.cloudinaryService.deleteImage(imageDeleteHash);
+      const oldImageDeleteHash = product.imageDeleteHash;
+
+      if (product.imageId && oldImageDeleteHash) {
+        await this.cloudinaryService.deleteImage(oldImageDeleteHash);
       }
 
       // Se o produto tem imagem local, deleta o arquivo local também
