@@ -1,12 +1,19 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@shared/config/config.service';
 import axios from 'axios';
+import { v2 as cloudinary } from 'cloudinary';
 import FormData from 'form-data';
 import * as fs from 'fs';
 
 @Injectable()
 export class CloudinaryService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {
+    cloudinary.config({
+      cloud_name: this.configService.cloudinaryCloudName,
+      api_key: this.configService.cloudinaryApiKey,
+      api_secret: this.configService.cloudinaryApiSecret,
+    });
+  }
 
   async uploadImage(
     filePath: string,
@@ -39,21 +46,13 @@ export class CloudinaryService {
   }
 
   async deleteImage(publicId: string): Promise<void> {
-    const cloudName = this.configService.cloudinaryCloudName;
-    const apiKey = this.configService.cloudinaryApiKey;
-    const apiSecret = this.configService.cloudinaryApiSecret;
-
-    const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/image/upload`;
-
-    const auth = {
-      username: apiKey,
-      password: apiSecret,
-    };
-
     try {
-      await axios.delete(`${url}/${publicId}`, {
-        auth,
-      });
+      const result = await cloudinary.uploader.destroy(publicId);
+
+      if (result.result !== 'ok') {
+        throw new Error(`Não foi possível deletar: ${result.result}`);
+      }
+
       console.log(`Imagem ${publicId} deletada com sucesso do Cloudinary.`);
     } catch (error) {
       console.error(
