@@ -199,7 +199,7 @@ export class ProductsService {
           await this.cloudinaryService.deleteImage(oldImageDeleteHash);
         }
 
-        if (oldImageUrl) {
+        if (oldImageUrl && !oldImageUrl.startsWith('http')) {
           await this.fileService.deleteFileIfExists(oldImageUrl);
         }
       } catch (error) {
