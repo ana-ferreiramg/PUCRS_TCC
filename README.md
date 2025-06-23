@@ -2,6 +2,9 @@
 # PUCRS - Pós Graduação em Desenvolvimento Full Stack - Projeto de conclusão de curso
 
 # TCC - Sistema de Pedidos para Restaurantes e Bares
+![Capa](./docs/images/capa.png)
+
+📅 Projeto em desenvolvimento — Última atualização: junho de 2025
 
 📚 Documentação completa → [Veja aqui](./docs/index.md)
 
@@ -133,19 +136,18 @@ yarn start
 | DELETE | /orders/:id  | Exclusão de um pedido                       |  |
 
 🔐 Autenticação
-| Método | Endpoint     | Descrição                                            |
-| ------ | ------------ | ---------------------------------------------------- |
-| POST   | /auth/signup | Criação de conta do administrador (empresa)          |
-| POST   | /auth/login  | Autenticação de usuário (ADMIN, SUPER_ADMIN, WAITER) |  |
+| Método | Endpoint     | Descrição                                                                      |
+| ------ | ------------ | ------------------------------------------------------------------------------ |
+| POST   | /auth/signup | Criação de conta do administrador (empresa) e cadastro de garçons pela empresa |
+| POST   | /auth/login  | Autenticação de usuário (ADMIN, SUPER_ADMIN, WAITER)                           |  |
 
 🧑‍🍳 Garçons
-| Método | Endpoint   | Descrição                        |
-| ------ | ---------- | -------------------------------- |
-| POST   | /users     | Cadastro de garçons pela empresa |
-| GET    | /users     | Listagem de garçons da empresa   |
-| GET    | /users/:id | Buscar garçom por ID             |
-| PATCH  | /users/:id | Atualizar dados de um garçom     |
-| DELETE | /users/:id | Excluir garçom                   |  |
+| Método | Endpoint   | Descrição                      |
+| ------ | ---------- | ------------------------------ |
+| GET    | /users     | Listagem de garçons da empresa |
+| GET    | /users/:id | Buscar garçom por ID           |
+| PATCH  | /users/:id | Atualizar dados de um garçom   |
+| DELETE | /users/:id | Excluir garçom                 |  |
 
 📦 Produtos
 | Método | Endpoint      | Descrição                               |
@@ -217,8 +219,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ## 📞 Contato
 - Email: anapaulaferreiradev@gmail.com
-- LinkedIn: [linkedin.com/in/ana-ferreira](https://linkedin.com/in/ana--ferreira)
+- LinkedIn: [linkedin.com/in/ana--ferreira](https://linkedin.com/in/ana--ferreira)
 
 ---
 
-📅 Projeto em desenvolvimento — Última atualização: junho de 2025

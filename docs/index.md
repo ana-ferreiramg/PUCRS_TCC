@@ -5,6 +5,10 @@ Este diretório contém toda a documentação técnica e de usuário do sistema,
 ## Sumário
 
 - [Arquitetura do Sistema](./arquitetura.md)   
+- [Requisitos](./requisitos.md)
+- [Plano de desenvolvimento](./plano-de-desenvolvimento.md)
+- [Diagramas de apoio e manual de uso](./diagramas-e-manual-de-uso.md)
+- [Testes Unitários e Integração Contínua (CI/CD)](./testes-e-cicd.md)
 
 ## Como navegar pela documentação
 
