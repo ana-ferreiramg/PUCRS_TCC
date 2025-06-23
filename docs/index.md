@@ -27,4 +27,4 @@ Se você deseja ajudar a melhorar esta documentação:
 
 - [Repositório no GitHub](https://github.com/ana-ferreiramg/PUCRS_TCC)  
 - [Figma - Protótipo Visual](https://www.figma.com/design/IBADgIpUHBgIkOLcSMlO6k/TCC?m=auto&t=hDjfOokJYa0M87rY-1)  
-- [Postman - Coleção API](https://.postman.co/workspace/My-Workspace~a7375743-ff45-4ee3-8e91-f4969d0f1bb0/collection/40172076-bc619bf4-a4c0-43a9-a2d2-325d729dda0f?action=share&creator=40172076&active-environment=40172076-06fda899-0df7-49d1-bfb3-db8660b595af)  
+- [Postman - Coleção API](https://www.postman.com/anaferreira18/tcc/collection/pm7ufio/pucrs-tcc?action=share&creator=40172076)  
